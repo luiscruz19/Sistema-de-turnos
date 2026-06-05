@@ -5,7 +5,7 @@
 INFRA   = docker-compose.infra.yml
 MICROS  = microservicios-turnos/docker-compose.yml
 
-.PHONY: up down logs ps migrate seed
+.PHONY: up down logs ps migrate seed reset
 
 ## Levanta red, infraestructura, microservicios y servicios core
 up: .env
@@ -44,3 +44,12 @@ migrate:
 seed:
 	docker compose exec -T turnos_auth npm run create-admin
 	docker compose -f $(MICROS) exec -T turnos_ms_agenda node db/seed.js
+
+## reset: limpia volumenes y rehace todo desde cero (up + migrate + seed)
+reset:
+	docker compose down 2>/dev/null || true
+	docker compose -f $(MICROS) down 2>/dev/null || true
+	docker compose -f $(INFRA) down -v 2>/dev/null || true
+	$(MAKE) up
+	$(MAKE) migrate
+	$(MAKE) seed
