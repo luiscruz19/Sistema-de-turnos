@@ -163,7 +163,7 @@ function setupAssociations() {
     // ClientContact -> ClientNotes (1:N)
     ClientContact.hasMany(ClientNote, {
         foreignKey: 'client_contact_id',
-        as: 'notes',
+        as: 'clientNotes',
     });
 
     ClientNote.belongsTo(ClientContact, {
