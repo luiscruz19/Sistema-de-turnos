@@ -11,8 +11,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
       TZ: America/Argentina/Buenos_Aires
-    ports:
-      - "${DB_PORT_HOST:-3308}:3306"
+    # Acceso interno por net-shared. Para conectar un cliente externo, descomentar:
+    # ports:
+    #   - "${DB_PORT_HOST:-3308}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./infra/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -63,9 +64,9 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
-    ports:
-      - "${MINIO_API_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    # Acceso interno por net-shared (el servicio storage lo usa). Para abrir la consola web, descomentar:
+    # ports:
+    #   - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - minio_data:/data
     healthcheck:
