@@ -36,7 +36,9 @@ ps:
 
 ## Ejecuta las migraciones de base de datos (dentro de un contenedor, donde shared/db está montado)
 migrate:
-	docker compose -f $(MICROS) exec turnos_ms_agenda node db/migrations/runner.js
+	@echo "Esperando a que MySQL este listo..."
+	@until [ "$$(docker inspect -f '{{.State.Health.Status}}' turnos_mysql 2>/dev/null)" = "healthy" ]; do sleep 2; done
+	docker compose -f $(MICROS) exec -T turnos_ms_agenda node db/migrations/runner.js
 
 ## Carga el admin de auth y los datos demo de negocio
 seed:
