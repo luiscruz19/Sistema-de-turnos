@@ -22,16 +22,8 @@ export const CONFIG = {
     },
     UPLOAD: {
         MAX_SIZE_MB: parseInt(process.env.STORAGE_MAX_SIZE_MB) || 500,
-        OUTPUT_FORMAT: process.env.STORAGE_OUTPUT_FORMAT || 'webp',
-        MAX_WIDTH: parseInt(process.env.STORAGE_MAX_WIDTH) || 1920,
-        QUALITY: parseInt(process.env.STORAGE_QUALITY) || 85,
-        THUMBNAIL_WIDTH: parseInt(process.env.STORAGE_THUMBNAIL_WIDTH) || 300,
-        THUMBNAIL_HEIGHT: parseInt(process.env.STORAGE_THUMBNAIL_HEIGHT) || 300,
     },
     SECURITY: {
-        AV_SCAN: process.env.STORAGE_ENABLE_AV_SCAN === 'true',
-        AV_FAIL_CLOSED: process.env.STORAGE_AV_FAIL_CLOSED !== 'false',
-        ENABLE_QR: process.env.STORAGE_ENABLE_QR === 'true',
         BLOCKED_MIME_TYPES: (process.env.STORAGE_BLOCKED_MIME_TYPES || '').split(',').filter(Boolean),
         BLOCKED_EXTENSIONS: (process.env.STORAGE_BLOCKED_EXTENSIONS || '.php,.exe,.sh,.bat').split(',').filter(Boolean),
     },

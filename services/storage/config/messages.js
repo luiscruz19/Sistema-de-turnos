@@ -13,11 +13,9 @@ export default {
         file_not_found: 'No se encontró el archivo solicitado en el almacenamiento.',
     },
     success: {
-        upload: 'El archivo fue subido y procesado exitosamente.',
-        upload_multiple: 'Los archivos fueron subidos exitosamente.',
+        upload: 'El archivo fue subido exitosamente.',
         delete: 'El archivo fue eliminado correctamente del almacenamiento.',
         get: 'Archivo obtenido exitosamente.',
-        qr: 'Código QR generado y almacenado exitosamente.',
     },
     error: {
         upload: {
@@ -31,9 +29,6 @@ export default {
             invalid_type: 'El tipo de archivo no pudo ser detectado. Asegurate que sea un archivo válido.',
             processing_error: 'Ocurrió un error al procesar el archivo. Intentá con otro formato.',
             storage_error: 'No pudimos guardar el archivo en el almacenamiento. Intentá nuevamente.',
-            compression_error: 'No pudimos optimizar el archivo. Se guardó en su formato original.',
-            blocked: 'El archivo fue bloqueado por política de seguridad.',
-            av_error: 'No pudimos validar la seguridad del archivo. Intentá nuevamente más tarde.',
         },
         delete: {
             error: 'No pudimos eliminar el archivo. Puede que no exista o ya haya sido eliminado.',
@@ -44,10 +39,6 @@ export default {
             error: 'No pudimos obtener el archivo solicitado del almacenamiento.',
             not_found: 'El archivo que buscas no existe o fue eliminado.',
             invalid_key: 'El nombre de archivo no es válido.',
-        },
-        qr: {
-            text_required: 'El campo text es requerido para generar el código QR.',
-            error: 'Ocurrió un error al generar el código QR. Intentá nuevamente.',
         },
     },
 };
