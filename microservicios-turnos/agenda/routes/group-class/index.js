@@ -11,5 +11,7 @@ router.put('/:id', validateToken, ctrl.update);
 router.delete('/:id', validateToken, ctrl.del);
 router.post('/:id/enroll', validateToken, ctrl.enroll);
 router.delete('/:id/enroll/:enrollment_id', validateToken, ctrl.cancelEnrollment);
+router.patch('/:id/enroll/:enrollment_id/attendance', validateToken, ctrl.markAttendance);
+router.put('/:id/enroll/:enrollment_id/attendance', validateToken, ctrl.markAttendance);
 
 export default router;

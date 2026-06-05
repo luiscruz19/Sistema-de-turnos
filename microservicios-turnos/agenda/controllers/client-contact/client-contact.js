@@ -2,6 +2,8 @@ import ClientContact from '../../models/ClientContact.js';
 import Appointment from '../../models/Appointment.js';
 import Service from '../../models/Service.js';
 import Professional from '../../models/Professional.js';
+import ClientPackage from '../../models/ClientPackage.js';
+import SessionPackage from '../../models/SessionPackage.js';
 import { Op } from 'sequelize';
 import { errorMessage, successMessage } from '../../utils/messages.js';
 import messages from '../../config/messages.js';
@@ -61,16 +63,26 @@ export async function getById(req, res) {
 
         const contact = await ClientContact.findOne({
             where: { id },
-            include: [{
-                model: Appointment,
-                as: 'appointments',
-                include: [
-                    { model: Service, as: 'service', attributes: ['id', 'name'] },
-                    { model: Professional, as: 'professional', attributes: ['id', 'name'] },
-                ],
-                order: [['date', 'DESC'], ['start_time', 'DESC']],
-                limit: 50,
-            }],
+            include: [
+                {
+                    model: Appointment,
+                    as: 'appointments',
+                    include: [
+                        { model: Service, as: 'service', attributes: ['id', 'name'] },
+                        { model: Professional, as: 'professional', attributes: ['id', 'name'] },
+                    ],
+                    separate: true,
+                    order: [['date', 'DESC'], ['start_time', 'DESC']],
+                    limit: 50,
+                },
+                {
+                    model: ClientPackage,
+                    as: 'clientPackages',
+                    include: [{ model: SessionPackage, as: 'sessionPackage', attributes: ['id', 'nombre'] }],
+                    separate: true,
+                    order: [['createdAt', 'DESC']],
+                },
+            ],
         });
 
         if (!contact) {
@@ -171,6 +183,62 @@ export async function remove(req, res) {
 
     } catch (error) {
         console.error('Error deleting client contact:', error);
+        return res.status(500).json(errorMessage({
+            message: messages.system.common.errors.unexpected
+        }));
+    }
+}
+
+/**
+ * Historial de turnos del contacto con paginación, filtro por estado y resumen.
+ */
+export async function getHistory(req, res) {
+    try {
+        const { id } = req.params;
+        const { page = 1, limit = 20, status } = req.query;
+        const offset = (Number(page) - 1) * Number(limit);
+
+        const contact = await ClientContact.findByPk(id);
+        if (!contact) {
+            return res.status(404).json(errorMessage({
+                message: messages.entities.clientContact.errors.notFound
+            }));
+        }
+
+        const where = { client_contact_id: Number(id) };
+        if (status) where.status = status;
+
+        const { count, rows } = await Appointment.findAndCountAll({
+            where,
+            include: [
+                { model: Service, as: 'service', attributes: ['id', 'name', 'price'] },
+                { model: Professional, as: 'professional', attributes: ['id', 'name'] },
+            ],
+            order: [['date', 'DESC'], ['start_time', 'DESC']],
+            limit: Number(limit),
+            offset,
+        });
+
+        return res.status(200).json(successMessage({
+            message: messages.entities.clientContact.success.fetch,
+            extra: {
+                data: rows,
+                summary: {
+                    appointment_count: contact.appointment_count,
+                    no_show_count: contact.no_show_count,
+                    last_appointment_at: contact.last_appointment_at,
+                },
+                pagination: {
+                    totalItems: count,
+                    totalPages: Math.ceil(count / Number(limit)),
+                    currentPage: Number(page),
+                    perPage: Number(limit),
+                }
+            }
+        }));
+
+    } catch (error) {
+        console.error('Error getting client history:', error);
         return res.status(500).json(errorMessage({
             message: messages.system.common.errors.unexpected
         }));

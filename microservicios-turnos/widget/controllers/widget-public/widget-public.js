@@ -10,6 +10,7 @@ import { Op } from 'sequelize';
 import sequelize from '../../db/sequelize.js';
 import { errorMessage, successMessage } from '../../utils/messages.js';
 import { isValidEmail, isValidPhone, normalizeStr } from '../../utils/helpers.js';
+import { sendConfirmationEmail } from '../../utils/appointment-emails.js';
 import messages from '../../config/messages.js';
 
 /**
@@ -120,6 +121,15 @@ export async function getAvailability(req, res) {
 
         const duration = service.duration_minutes;
         const slotDuration = config.slot_duration_default || 30;
+        const bufferTime = service.buffer_time_minutes || 0;
+        const capacity = service.max_concurrent || 1;
+
+        // Si la fecha es hoy, descartar slots cuyo inicio ya pasó.
+        const nowAvail = new Date();
+        const todayAvail = nowAvail.toISOString().slice(0, 10);
+        const minStartMinutes = (date === todayAvail)
+            ? nowAvail.getHours() * 60 + nowAvail.getMinutes()
+            : -1;
 
         const dateObj = new Date(date + 'T00:00:00');
         const dayOfWeek = dateObj.getDay();
@@ -170,17 +180,27 @@ export async function getAvailability(req, res) {
                 }
             }
 
-            // Remove occupied
+            // Remove occupied (respeta buffer y capacidad max_concurrent)
             const existing = await Appointment.findAll({
                 where: {
-                    date, status: { [Op.notIn]: ['cancelled'] },
+                    date, status: { [Op.notIn]: ['cancelled', 'no_show'] },
                     ...(profId ? { professional_id: profId } : {}),
                 },
                 attributes: ['start_time', 'end_time'],
             });
 
-            const busy = existing.map(a => ({ start: timeToMinutes(a.start_time), end: timeToMinutes(a.end_time) }));
-            return possibleSlots.filter(sl => !busy.some(b => sl.sMin < b.end && sl.eMin > b.start))
+            const busy = existing.map(a => ({
+                start: timeToMinutes(a.start_time) - bufferTime,
+                end: timeToMinutes(a.end_time) + bufferTime,
+            }));
+
+            return possibleSlots
+                .filter(sl => {
+                    const slEnd = sl.eMin + bufferTime;
+                    const overlapping = busy.filter(b => sl.sMin < b.end && slEnd > b.start).length;
+                    return overlapping < capacity;
+                })
+                .filter(sl => minStartMinutes < 0 || sl.sMin >= minStartMinutes)
                 .map(s => ({ start: s.start, end: s.end }));
         };
 
@@ -262,10 +282,36 @@ export async function createBooking(req, res) {
             return res.status(404).json(errorMessage({ message: messages.entities.service.errors.notFound }));
         }
 
+        // Validar ventana de reserva (no en el pasado, dentro del límite anticipado)
+        const nowDate = new Date();
+        const targetDateTime = new Date(`${date}T${start_time}:00`);
+        if (Number.isNaN(targetDateTime.getTime())) {
+            return res.status(400).json(errorMessage({ message: messages.entities.appointment.errors.invalidDateRange }));
+        }
+        if (targetDateTime.getTime() < nowDate.getTime()) {
+            return res.status(400).json(errorMessage({ message: messages.entities.appointment.errors.pastDate }));
+        }
+        const advanceDays = config.booking_advance_days ?? 30;
+        if (advanceDays > 0) {
+            const limit = new Date(nowDate);
+            limit.setDate(limit.getDate() + advanceDays);
+            limit.setHours(23, 59, 59, 999);
+            if (targetDateTime.getTime() > limit.getTime()) {
+                return res.status(400).json(errorMessage({ message: messages.entities.appointment.errors.advanceLimitExceeded }));
+            }
+        }
+
         // Calcular end_time
         const [h, m] = start_time.split(':').map(Number);
         const endMin = h * 60 + m + service.duration_minutes;
         const end_time = `${Math.floor(endMin / 60).toString().padStart(2, '0')}:${(endMin % 60).toString().padStart(2, '0')}:00`;
+
+        // Franja con buffer del servicio (preparación entre turnos)
+        const bufferMinutes = service.buffer_time_minutes || 0;
+        const startBufMin = (h * 60 + m) - bufferMinutes;
+        const endBufMin = endMin + bufferMinutes;
+        const start_with_buffer = `${Math.max(0, Math.floor(startBufMin / 60)).toString().padStart(2, '0')}:${(((startBufMin % 60) + 60) % 60).toString().padStart(2, '0')}:00`;
+        const end_with_buffer = `${Math.floor(endBufMin / 60).toString().padStart(2, '0')}:${(endBufMin % 60).toString().padStart(2, '0')}:00`;
 
         // Determinar depósito
         let depositAmount = 0;
@@ -285,9 +331,9 @@ export async function createBooking(req, res) {
             appointment = await sequelize.transaction(async (t) => {
                 const conflictWhere = {
                     date,
-                    status: { [Op.notIn]: ['cancelled'] },
-                    start_time: { [Op.lt]: end_time },
-                    end_time: { [Op.gt]: start_time },
+                    status: { [Op.notIn]: ['cancelled', 'no_show'] },
+                    start_time: { [Op.lt]: end_with_buffer },
+                    end_time: { [Op.gt]: start_with_buffer },
                 };
                 if (professional_id) conflictWhere.professional_id = professional_id;
 
@@ -362,6 +408,14 @@ export async function createBooking(req, res) {
             }
             throw txErr;
         }
+
+        // Email de confirmación (best-effort, vía core /send-email)
+        appointment.service = service;
+        sendConfirmationEmail({
+            appointment,
+            businessName: config?.name,
+            serviceName: service.name,
+        }).catch((e) => console.error('[widget] email confirmación:', e.message));
 
         return res.status(201).json(successMessage({
             message: messages.entities.widget.success.booked,

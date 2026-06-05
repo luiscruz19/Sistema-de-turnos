@@ -29,7 +29,7 @@ export async function list(req, res) {
         });
 
         return res.status(200).json(successMessage({
-            message: 'Lista de espera obtenida correctamente.',
+            message: messages.entities.waitlist.success.list,
             extra: { data: entries }
         }));
 
@@ -46,7 +46,13 @@ export async function list(req, res) {
  */
 export async function create(req, res) {
     try {
-        const { client_contact_id, professional_id, service_id, fecha_preferida, notas } = req.body;
+        const { client_contact_id, professional_id, service_id, fecha_preferida } = req.body;
+
+        if (!client_contact_id || !service_id) {
+            return res.status(400).json(errorMessage({
+                message: messages.system.validation.errors.fieldsRequired
+            }));
+        }
 
         const entry = await WaitlistEntry.create({
             client_contact_id,
@@ -59,7 +65,7 @@ export async function create(req, res) {
         });
 
         return res.status(201).json(successMessage({
-            message: 'Cliente agregado a la lista de espera.',
+            message: messages.entities.waitlist.success.created,
             extra: { data: entry }
         }));
 
@@ -77,23 +83,31 @@ export async function create(req, res) {
 export async function update(req, res) {
     try {
         const { id } = req.params;
-        const { estado, notas } = req.body;
+        const { estado, fecha_preferida, professional_id } = req.body;
 
         const entry = await WaitlistEntry.findOne({ where: { id } });
         if (!entry) {
             return res.status(404).json(errorMessage({
-                message: 'Entrada de lista de espera no encontrada.'
+                message: messages.entities.waitlist.errors.notFound
+            }));
+        }
+
+        const VALID_ESTADOS = ['esperando', 'notificado', 'reservado', 'cancelado'];
+        if (estado !== undefined && !VALID_ESTADOS.includes(estado)) {
+            return res.status(400).json(errorMessage({
+                message: messages.system.validation.errors.invalidEnumValue
             }));
         }
 
         const updateData = {};
         if (estado !== undefined) updateData.estado = estado;
-        if (notas !== undefined) updateData.notas = notas;
+        if (fecha_preferida !== undefined) updateData.fecha_preferida = fecha_preferida || null;
+        if (professional_id !== undefined) updateData.professional_id = professional_id || null;
 
         await entry.update(updateData);
 
         return res.status(200).json(successMessage({
-            message: 'Lista de espera actualizada correctamente.',
+            message: messages.entities.waitlist.success.updated,
             extra: { data: entry }
         }));
 
@@ -115,14 +129,14 @@ export async function del(req, res) {
         const entry = await WaitlistEntry.findOne({ where: { id } });
         if (!entry) {
             return res.status(404).json(errorMessage({
-                message: 'Entrada de lista de espera no encontrada.'
+                message: messages.entities.waitlist.errors.notFound
             }));
         }
 
         await entry.destroy();
 
         return res.status(200).json(successMessage({
-            message: 'Entrada eliminada correctamente.'
+            message: messages.entities.waitlist.success.deleted
         }));
 
     } catch (error) {
@@ -143,7 +157,7 @@ export async function notify(req, res) {
         const entry = await WaitlistEntry.findOne({ where: { id } });
         if (!entry) {
             return res.status(404).json(errorMessage({
-                message: 'Entrada de lista de espera no encontrada.'
+                message: messages.entities.waitlist.errors.notFound
             }));
         }
 
@@ -154,7 +168,7 @@ export async function notify(req, res) {
         });
 
         return res.status(200).json(successMessage({
-            message: 'Cliente notificado correctamente.',
+            message: messages.entities.waitlist.success.notified,
             extra: { data: entry }
         }));
 

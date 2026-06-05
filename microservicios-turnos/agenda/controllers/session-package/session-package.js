@@ -1,6 +1,7 @@
 import SessionPackage from '../../models/SessionPackage.js';
 import ClientPackage from '../../models/ClientPackage.js';
 import Service from '../../models/Service.js';
+import sequelize from '../../db/sequelize.js';
 import { errorMessage, successMessage } from '../../utils/messages.js';
 import messages from '../../config/messages.js';
 
@@ -15,7 +16,7 @@ export async function list(req, res) {
         });
 
         return res.status(200).json(successMessage({
-            message: 'Paquetes obtenidos correctamente.',
+            message: messages.entities.sessionPackage.success.list,
             extra: { data: packages }
         }));
 
@@ -45,7 +46,7 @@ export async function create(req, res) {
         });
 
         return res.status(201).json(successMessage({
-            message: 'Paquete creado correctamente.',
+            message: messages.entities.sessionPackage.success.created,
             extra: { data: sessionPackage }
         }));
 
@@ -71,12 +72,12 @@ export async function getById(req, res) {
 
         if (!sessionPackage) {
             return res.status(404).json(errorMessage({
-                message: 'Paquete no encontrado.'
+                message: messages.entities.sessionPackage.errors.notFound
             }));
         }
 
         return res.status(200).json(successMessage({
-            message: 'Paquete obtenido correctamente.',
+            message: messages.entities.sessionPackage.success.fetch,
             extra: { data: sessionPackage }
         }));
 
@@ -98,14 +99,14 @@ export async function update(req, res) {
         const sessionPackage = await SessionPackage.findOne({ where: { id } });
         if (!sessionPackage) {
             return res.status(404).json(errorMessage({
-                message: 'Paquete no encontrado.'
+                message: messages.entities.sessionPackage.errors.notFound
             }));
         }
 
         await sessionPackage.update(req.body);
 
         return res.status(200).json(successMessage({
-            message: 'Paquete actualizado correctamente.',
+            message: messages.entities.sessionPackage.success.updated,
             extra: { data: sessionPackage }
         }));
 
@@ -127,14 +128,14 @@ export async function del(req, res) {
         const sessionPackage = await SessionPackage.findOne({ where: { id } });
         if (!sessionPackage) {
             return res.status(404).json(errorMessage({
-                message: 'Paquete no encontrado.'
+                message: messages.entities.sessionPackage.errors.notFound
             }));
         }
 
         await sessionPackage.destroy();
 
         return res.status(200).json(successMessage({
-            message: 'Paquete eliminado correctamente.'
+            message: messages.entities.sessionPackage.success.deleted
         }));
 
     } catch (error) {
@@ -163,7 +164,7 @@ export async function listClientPackages(req, res) {
         });
 
         return res.status(200).json(successMessage({
-            message: 'Paquetes del cliente obtenidos correctamente.',
+            message: messages.entities.sessionPackage.success.clientList,
             extra: { data: clientPackages }
         }));
 
@@ -183,12 +184,18 @@ export async function assignPackage(req, res) {
     try {
         const { client_contact_id, session_package_id } = req.body;
 
+        if (!client_contact_id || !session_package_id) {
+            return res.status(400).json(errorMessage({
+                message: messages.system.validation.errors.fieldsRequired
+            }));
+        }
+
         const sessionPackage = await SessionPackage.findOne({
             where: { id: session_package_id },
         });
         if (!sessionPackage) {
             return res.status(404).json(errorMessage({
-                message: 'Paquete no encontrado.'
+                message: messages.entities.sessionPackage.errors.notFound
             }));
         }
 
@@ -214,12 +221,100 @@ export async function assignPackage(req, res) {
         });
 
         return res.status(201).json(successMessage({
-            message: 'Paquete asignado correctamente.',
+            message: messages.entities.sessionPackage.success.assigned,
             extra: { data: clientPackage }
         }));
 
     } catch (error) {
         console.error('Error assigning package:', error);
+        return res.status(500).json(errorMessage({
+            message: messages.system.common.errors.unexpected
+        }));
+    }
+}
+
+/**
+ * Descontar manualmente una sesión de un paquete del cliente.
+ * Valida saldo y vencimiento. Marca como completado al agotarse.
+ */
+export async function useSession(req, res) {
+    try {
+        const { client_package_id } = req.params;
+
+        const result = await sequelize.transaction(async (t) => {
+            const pkg = await ClientPackage.findByPk(client_package_id, { transaction: t, lock: t.LOCK.UPDATE });
+            if (!pkg) {
+                return { error: 404, message: messages.entities.sessionPackage.errors.clientPackageNotFound };
+            }
+            if (pkg.estado === 'vencido') {
+                return { error: 409, message: messages.entities.sessionPackage.errors.expired };
+            }
+            if (pkg.fecha_vencimiento && pkg.fecha_vencimiento < new Date().toISOString().slice(0, 10)) {
+                await pkg.update({ estado: 'vencido' }, { transaction: t });
+                return { error: 409, message: messages.entities.sessionPackage.errors.expired };
+            }
+            if (pkg.sesiones_usadas >= pkg.sesiones_total) {
+                return { error: 409, message: messages.entities.sessionPackage.errors.noSessionsLeft };
+            }
+
+            const usadas = pkg.sesiones_usadas + 1;
+            await pkg.update({
+                sesiones_usadas: usadas,
+                estado: usadas >= pkg.sesiones_total ? 'completado' : 'activo',
+            }, { transaction: t });
+
+            return { data: pkg };
+        });
+
+        if (result.error) {
+            return res.status(result.error).json(errorMessage({ message: result.message }));
+        }
+
+        return res.status(200).json(successMessage({
+            message: messages.entities.sessionPackage.success.updated,
+            extra: { data: result.data }
+        }));
+
+    } catch (error) {
+        console.error('Error using session:', error);
+        return res.status(500).json(errorMessage({
+            message: messages.system.common.errors.unexpected
+        }));
+    }
+}
+
+/**
+ * Restituir manualmente una sesión a un paquete del cliente.
+ */
+export async function refundSession(req, res) {
+    try {
+        const { client_package_id } = req.params;
+
+        const result = await sequelize.transaction(async (t) => {
+            const pkg = await ClientPackage.findByPk(client_package_id, { transaction: t, lock: t.LOCK.UPDATE });
+            if (!pkg) {
+                return { error: 404, message: messages.entities.sessionPackage.errors.clientPackageNotFound };
+            }
+            if (pkg.sesiones_usadas > 0) {
+                await pkg.update({
+                    sesiones_usadas: pkg.sesiones_usadas - 1,
+                    estado: pkg.estado === 'completado' ? 'activo' : pkg.estado,
+                }, { transaction: t });
+            }
+            return { data: pkg };
+        });
+
+        if (result.error) {
+            return res.status(result.error).json(errorMessage({ message: result.message }));
+        }
+
+        return res.status(200).json(successMessage({
+            message: messages.entities.sessionPackage.success.updated,
+            extra: { data: result.data }
+        }));
+
+    } catch (error) {
+        console.error('Error refunding session:', error);
         return res.status(500).json(errorMessage({
             message: messages.system.common.errors.unexpected
         }));

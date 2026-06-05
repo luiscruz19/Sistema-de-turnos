@@ -82,6 +82,16 @@ const Appointment = sequelize.define('appointments', {
         allowNull: false,
         defaultValue: false,
     },
+    reminder_email_24h_sent: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    reminder_email_2h_sent: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
     cancelled_at: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -100,6 +110,16 @@ const Appointment = sequelize.define('appointments', {
         allowNull: true,
         comment: 'Ultimo PaymentIntent asociado al turno',
     },
+    client_package_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'Paquete de sesiones del que se descontó este turno',
+    },
+    rescheduled_from_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'Si el turno surgió de reprogramar otro, id del original',
+    },
     payment_required: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -115,6 +135,7 @@ const Appointment = sequelize.define('appointments', {
         { fields: ['service_id'] },
         { fields: ['client_contact_id'] },
         { fields: ['date', 'start_time'] },
+        { fields: ['client_package_id'] },
     ]
 });
 

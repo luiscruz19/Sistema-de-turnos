@@ -6,6 +6,10 @@ import { Op, fn, col } from 'sequelize';
 import { errorMessage, successMessage } from '../../utils/messages.js';
 import messages from '../../config/messages.js';
 
+function todayStr() {
+    return new Date().toISOString().slice(0, 10);
+}
+
 /**
  * Obtener estadísticas de turnos
  */
@@ -185,6 +189,102 @@ export async function getStats(req, res) {
 
     } catch (error) {
         console.error('Error getting analytics:', error);
+        return res.status(500).json(errorMessage({
+            message: messages.system.common.errors.unexpected
+        }));
+    }
+}
+
+/**
+ * Dashboard operativo: foto del día y próximos turnos.
+ * - Turnos de hoy por estado y total.
+ * - Ocupación de hoy (turnos activos vs. capacidad estimada).
+ * - Ingresos confirmados/completados de hoy.
+ * - Tasa de no-show histórica.
+ * - Lista de próximos turnos (hoy en adelante).
+ */
+export async function getDashboard(req, res) {
+    try {
+        const today = todayStr();
+        const { upcoming_limit = 10 } = req.query;
+
+        const [
+            todayByStatus,
+            todayRevenueRow,
+            globalTotals,
+            upcoming,
+        ] = await Promise.all([
+            Appointment.findAll({
+                where: { date: today },
+                attributes: ['status', [fn('COUNT', col('id')), 'count']],
+                group: ['status'],
+                raw: true,
+            }),
+
+            Appointment.sequelize.query(`
+                SELECT COALESCE(SUM(s.price), 0) AS revenue
+                FROM appointments a
+                INNER JOIN services s ON s.id = a.service_id
+                WHERE a.date = :today AND a.status IN ('completed', 'confirmed')
+            `, { replacements: { today }, type: 'SELECT' }),
+
+            Appointment.findAll({
+                attributes: ['status', [fn('COUNT', col('id')), 'count']],
+                group: ['status'],
+                raw: true,
+            }),
+
+            Appointment.findAll({
+                where: {
+                    date: { [Op.gte]: today },
+                    status: { [Op.in]: ['pending', 'confirmed'] },
+                },
+                include: [
+                    { model: Service, as: 'service', attributes: ['id', 'name'] },
+                    { model: Professional, as: 'professional', attributes: ['id', 'name', 'color'] },
+                ],
+                order: [['date', 'ASC'], ['start_time', 'ASC']],
+                limit: Number(upcoming_limit),
+            }),
+        ]);
+
+        const todayMap = {};
+        todayByStatus.forEach(s => { todayMap[s.status] = Number(s.count); });
+        const todayActive = (todayMap.pending || 0) + (todayMap.confirmed || 0) + (todayMap.completed || 0);
+        const todayTotal = Object.values(todayMap).reduce((a, b) => a + b, 0);
+
+        const globalMap = {};
+        globalTotals.forEach(s => { globalMap[s.status] = Number(s.count); });
+        const globalTotal = Object.values(globalMap).reduce((a, b) => a + b, 0);
+        const noShowRate = globalTotal > 0
+            ? Number((((globalMap.no_show || 0) / globalTotal) * 100).toFixed(1))
+            : 0;
+
+        const todayRevenue = todayRevenueRow?.[0]?.revenue ? Number(todayRevenueRow[0].revenue) : 0;
+
+        return res.status(200).json(successMessage({
+            message: messages.entities.analytics.success.dashboard,
+            extra: {
+                data: {
+                    date: today,
+                    today: {
+                        total: todayTotal,
+                        active: todayActive,
+                        pending: todayMap.pending || 0,
+                        confirmed: todayMap.confirmed || 0,
+                        completed: todayMap.completed || 0,
+                        cancelled: todayMap.cancelled || 0,
+                        no_show: todayMap.no_show || 0,
+                        revenue: todayRevenue,
+                    },
+                    no_show_rate: noShowRate,
+                    upcoming,
+                }
+            }
+        }));
+
+    } catch (error) {
+        console.error('Error getting dashboard:', error);
         return res.status(500).json(errorMessage({
             message: messages.system.common.errors.unexpected
         }));

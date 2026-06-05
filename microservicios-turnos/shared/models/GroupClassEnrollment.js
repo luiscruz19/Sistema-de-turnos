@@ -16,9 +16,14 @@ const GroupClassEnrollment = sequelize.define('group_class_enrollments', {
         allowNull: false,
     },
     estado: {
-        type: DataTypes.ENUM('inscripto', 'cancelado', 'asistio', 'no_asistio'),
+        type: DataTypes.ENUM('inscripto', 'lista_espera', 'cancelado', 'asistio', 'no_asistio'),
         allowNull: false,
         defaultValue: 'inscripto',
+    },
+    waitlist_position: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'Orden en la lista de espera de la clase',
     },
     payment_intent_id: {
         type: DataTypes.INTEGER,

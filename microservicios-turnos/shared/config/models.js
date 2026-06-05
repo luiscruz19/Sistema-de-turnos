@@ -4,7 +4,7 @@ export const sharedModels = [];
 // Cada MS es dueño de sus modelos (sync); el resto solo los lee cuando hace include.
 export const modelOwnership = {
     usuarios: ['Admin'],
-    agenda: ['Appointment', 'AppointmentReminder', 'Professional', 'ProfessionalService', 'ProfessionalCalendarSync', 'Service', 'Schedule', 'ScheduleException', 'ClientContact', 'BusinessConfig', 'AnalyticsDaily', 'WhatsappSession'],
+    agenda: ['Appointment', 'AppointmentReminder', 'Professional', 'ProfessionalService', 'ProfessionalCalendarSync', 'Service', 'Schedule', 'ScheduleException', 'ClientContact', 'BusinessConfig', 'AnalyticsDaily', 'WhatsappSession', 'IntakeForm', 'IntakeField', 'IntakeResponse', 'SessionPackage', 'ClientPackage', 'WaitlistEntry', 'GroupClass', 'GroupClassEnrollment'],
     pagos: ['PaymentIntent', 'PaymentTransaction'],
     integraciones: ['Integration'],
     clinica: ['ClientRecord', 'ClientNote', 'ClientAttachment'],

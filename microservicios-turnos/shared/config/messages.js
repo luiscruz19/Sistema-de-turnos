@@ -51,12 +51,16 @@ const messages = Object.freeze({
                 invalidEmail: 'El email ingresado no es válido.',
                 invalidPhone: 'El teléfono ingresado no es válido.',
                 contactRequired: 'Se requiere un email o un teléfono de contacto.',
+                invalidTransition: 'No se puede cambiar el turno a ese estado desde su estado actual.',
+                cancelTooLate: 'No se puede cancelar: se superó el plazo mínimo permitido por la política de cancelación.',
+                terminalState: 'El turno está en un estado final y no admite esta acción.',
             },
             success: {
                 list: 'Turnos obtenidos correctamente.',
                 fetch: 'Turno obtenido correctamente.',
                 created: 'Turno creado correctamente.',
                 updated: 'Turno actualizado correctamente.',
+                rescheduled: 'Turno reprogramado correctamente.',
                 cancelled: 'Turno cancelado correctamente.',
                 confirmed: 'Turno confirmado correctamente.',
                 completed: 'Turno marcado como completado.',
@@ -135,6 +139,57 @@ const messages = Object.freeze({
         analytics: {
             success: {
                 fetch: 'Estadísticas obtenidas correctamente.',
+                dashboard: 'Resumen del dashboard obtenido correctamente.',
+            }
+        },
+        waitlist: {
+            errors: {
+                notFound: 'Entrada de lista de espera no encontrada.',
+            },
+            success: {
+                list: 'Lista de espera obtenida correctamente.',
+                created: 'Cliente agregado a la lista de espera.',
+                updated: 'Lista de espera actualizada correctamente.',
+                deleted: 'Entrada eliminada correctamente.',
+                notified: 'Cliente notificado correctamente.',
+            }
+        },
+        groupClass: {
+            errors: {
+                notFound: 'Clase grupal no encontrada.',
+                enrollmentNotFound: 'Inscripción no encontrada.',
+                noSpots: 'No hay cupo disponible en esta clase.',
+                alreadyEnrolled: 'El cliente ya está inscripto en esta clase.',
+                notBookable: 'La clase no admite inscripciones (cancelada, completada o ya iniciada).',
+            },
+            success: {
+                list: 'Clases grupales obtenidas correctamente.',
+                fetch: 'Clase grupal obtenida correctamente.',
+                created: 'Clase grupal creada correctamente.',
+                updated: 'Clase grupal actualizada correctamente.',
+                deleted: 'Clase grupal eliminada correctamente.',
+                enrolled: 'Inscripción realizada correctamente.',
+                waitlisted: 'No había cupo: el cliente quedó en lista de espera de la clase.',
+                enrollmentCancelled: 'Inscripción cancelada correctamente.',
+                promoted: 'Se promovió al primero de la lista de espera al liberarse un cupo.',
+            }
+        },
+        sessionPackage: {
+            errors: {
+                notFound: 'Paquete no encontrado.',
+                clientPackageNotFound: 'El cliente no tiene este paquete asignado.',
+                noSessionsLeft: 'El paquete no tiene sesiones disponibles.',
+                expired: 'El paquete está vencido.',
+                serviceMismatch: 'El paquete no corresponde al servicio del turno.',
+            },
+            success: {
+                list: 'Paquetes obtenidos correctamente.',
+                fetch: 'Paquete obtenido correctamente.',
+                created: 'Paquete creado correctamente.',
+                updated: 'Paquete actualizado correctamente.',
+                deleted: 'Paquete eliminado correctamente.',
+                assigned: 'Paquete asignado correctamente.',
+                clientList: 'Paquetes del cliente obtenidos correctamente.',
             }
         },
         whatsapp: {

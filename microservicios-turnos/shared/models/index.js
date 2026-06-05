@@ -291,6 +291,17 @@ function setupAssociations() {
         as: 'sessionPackage',
     });
 
+    // ClientPackage -> Appointments (turnos descontados del paquete)
+    ClientPackage.hasMany(Appointment, {
+        foreignKey: 'client_package_id',
+        as: 'appointments',
+    });
+
+    Appointment.belongsTo(ClientPackage, {
+        foreignKey: 'client_package_id',
+        as: 'clientPackage',
+    });
+
     // ClientContact -> WaitlistEntries (1:N)
     ClientContact.hasMany(WaitlistEntry, {
         foreignKey: 'client_contact_id',

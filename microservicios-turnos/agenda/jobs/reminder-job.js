@@ -1,9 +1,11 @@
 import Appointment from '../models/Appointment.js';
+import AppointmentReminder from '../models/AppointmentReminder.js';
 import BusinessConfig from '../models/BusinessConfig.js';
 import ClientContact from '../models/ClientContact.js';
 import Service from '../models/Service.js';
 import { Op } from 'sequelize';
 import { sendTextMessage } from '../integrations/whatsapp.js';
+import { sendReminderEmail } from '../utils/appointment-emails.js';
 
 /**
  * Formatea fecha YYYY-MM-DD a DD/MM/YYYY
@@ -58,12 +60,26 @@ async function sendReminders24h(now) {
 
     console.info(`[reminder-job] Enviando ${appointments.length} recordatorios de 24h para ${tomorrowStr}`);
 
+    const config = await BusinessConfig.findOne();
+
     for (const appt of appointments) {
         try {
             const message = buildReminderMessage(appt, '24h');
 
             if (appt.client_phone) {
                 await sendWhatsAppReminder(appt.client_phone, message);
+                await logReminder(appt.id, '24h', 'whatsapp');
+            }
+
+            if (appt.client_email && !appt.reminder_email_24h_sent) {
+                const result = await sendReminderEmail({
+                    appointment: appt,
+                    businessName: config?.name,
+                    serviceName: appt.service?.name,
+                    type: '24h',
+                });
+                await logReminder(appt.id, '24h', 'email', result?.status === 1 ? 'sent' : 'failed');
+                await appt.update({ reminder_email_24h_sent: true });
             }
 
             // Marcar como enviado independientemente de si tiene phone o no
@@ -109,18 +125,49 @@ async function sendReminders2h(now) {
 
     console.info(`[reminder-job] Enviando ${appointments.length} recordatorios de 2h para hoy`);
 
+    const config = await BusinessConfig.findOne();
+
     for (const appt of appointments) {
         try {
             const message = buildReminderMessage(appt, '2h');
 
             if (appt.client_phone) {
                 await sendWhatsAppReminder(appt.client_phone, message);
+                await logReminder(appt.id, '2h', 'whatsapp');
+            }
+
+            if (appt.client_email && !appt.reminder_email_2h_sent) {
+                const result = await sendReminderEmail({
+                    appointment: appt,
+                    businessName: config?.name,
+                    serviceName: appt.service?.name,
+                    type: '2h',
+                });
+                await logReminder(appt.id, '2h', 'email', result?.status === 1 ? 'sent' : 'failed');
+                await appt.update({ reminder_email_2h_sent: true });
             }
 
             await appt.update({ reminder_sent: true });
         } catch (err) {
             console.error(`[reminder-job] Error enviando 2h reminder para appointment ${appt.id}:`, err.message);
         }
+    }
+}
+
+/**
+ * Registra un recordatorio en appointment_reminders (best-effort).
+ */
+async function logReminder(appointmentId, type, channel, status = 'sent') {
+    try {
+        await AppointmentReminder.create({
+            appointment_id: appointmentId,
+            type,
+            channel,
+            sent_at: new Date(),
+            status,
+        });
+    } catch (err) {
+        console.error(`[reminder-job] Error registrando reminder ${type}/${channel} appt ${appointmentId}:`, err.message);
     }
 }
 

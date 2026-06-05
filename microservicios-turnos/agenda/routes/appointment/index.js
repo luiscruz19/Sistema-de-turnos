@@ -8,6 +8,8 @@ router.get('/', validateToken, ctrl.list);
 router.get('/:id', validateToken, ctrl.getById);
 router.post('/', validateToken, ctrl.create);
 router.put('/:id', validateToken, ctrl.update);
+router.patch('/:id/reschedule', validateToken, ctrl.reschedule);
+router.put('/:id/reschedule', validateToken, ctrl.reschedule);
 router.delete('/:id', validateToken, ctrl.cancel);
 router.patch('/:id/cancel', validateToken, ctrl.cancel);
 router.put('/:id/cancel', validateToken, ctrl.cancel);
