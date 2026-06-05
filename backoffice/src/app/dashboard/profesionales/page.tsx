@@ -12,7 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Loader2, Calendar as CalendarIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Plus, Pencil, Trash2, Loader2, Calendar as CalendarIcon, Users } from 'lucide-react';
 import { Professional, Service } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -140,20 +142,34 @@ export default function ProfesionalesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Profesionales</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Profesionales</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Administra tu equipo y los servicios que ofrece cada uno.</p>
+                </div>
                 <Button onClick={openNew} className="gap-1"><Plus className="h-4 w-4" /> Nuevo profesional</Button>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : professionals.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay profesionales registrados</div>
+                        <EmptyState
+                            icon={Users}
+                            title="Aun no hay profesionales"
+                            description="Agrega a los integrantes de tu equipo para asignarles turnos."
+                            action={
+                                <Button onClick={openNew} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nuevo profesional
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -208,7 +224,7 @@ export default function ProfesionalesPage() {
                                                 >
                                                     <CalendarIcon className="h-3.5 w-3.5" />
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="h-7 w-7 text-red-600" onClick={() => handleDelete(p.id)}>
+                                                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleDelete(p.id)}>
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>
                                             </div>
@@ -252,7 +268,7 @@ export default function ProfesionalesPage() {
                                 <Label>Color</Label>
                                 <div className="flex items-center gap-2">
                                     <input type="color" value={form.color} onChange={e => setForm(f => ({ ...f, color: e.target.value }))} className="w-10 h-10 rounded cursor-pointer border-0" />
-                                    <span className="text-sm text-gray-500">{form.color}</span>
+                                    <span className="text-sm text-muted-foreground">{form.color}</span>
                                 </div>
                             </div>
                         </div>

@@ -23,7 +23,7 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body
-                className={`${inter.variable} antialiased bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen`}
+                className={`${inter.variable} antialiased bg-background min-h-screen`}
             >
                 <AuthProvider>
                     {children}

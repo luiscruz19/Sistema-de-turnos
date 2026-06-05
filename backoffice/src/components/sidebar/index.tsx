@@ -45,31 +45,31 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             <aside
                 className={`${
                     isMobile
-                        ? `fixed left-0 top-0 z-[9999] flex h-full w-64 transform flex-col border-r border-gray-200 bg-white transition-transform duration-300 ease-in-out ${
+                        ? `fixed left-0 top-0 z-[9999] flex h-full w-64 transform flex-col border-r border-border bg-card transition-transform duration-300 ease-in-out ${
                               isOpen ? "translate-x-0" : "-translate-x-full"
                           }`
-                        : "flex h-screen w-64 flex-col border-r border-gray-200 bg-white"
+                        : "flex h-screen w-64 flex-col border-r border-border bg-card"
                 }`}
             >
-                <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                <div className="flex items-center justify-between border-b border-border px-5 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
-                            <CalendarCheck className="h-6 w-6" />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                            <CalendarCheck className="h-5 w-5" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold text-gray-900">Turnos IA</h1>
-                            <p className="text-xs text-gray-500">Panel de administracion</p>
+                            <h1 className="text-sm font-semibold tracking-tight text-foreground">Turnos IA</h1>
+                            <p className="text-xs text-muted-foreground">Panel de administracion</p>
                         </div>
                     </div>
                     {isMobile && (
-                        <button onClick={onClose} className="rounded-md p-2 hover:bg-gray-100">
-                            <X className="h-6 w-6 text-gray-600" />
+                        <button onClick={onClose} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
+                            <X className="h-5 w-5" />
                         </button>
                     )}
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-4 py-6">
-                    <ul className="space-y-1">
+                <nav className="flex-1 overflow-y-auto px-3 py-4">
+                    <ul className="space-y-0.5">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -78,14 +78,14 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                                 <li key={item.href}>
                                     <Link
                                         href={item.href}
-                                        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-base transition-colors ${
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                                             active
-                                                ? "bg-primary font-medium text-white"
-                                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                                ? "bg-primary/10 font-medium text-primary"
+                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         }`}
                                     >
                                         <Icon
-                                            className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-gray-500"}`}
+                                            className={`h-[18px] w-[18px] shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`}
                                         />
                                         <span>{item.label}</span>
                                     </Link>
@@ -95,8 +95,8 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     </ul>
                 </nav>
 
-                <div className="border-t border-gray-200 p-4">
-                    <div className="text-center text-xs text-gray-500">Turnos IA v1.0.0</div>
+                <div className="border-t border-border p-4">
+                    <div className="text-center text-xs text-muted-foreground">Turnos IA v1.0.0</div>
                 </div>
             </aside>
         </>

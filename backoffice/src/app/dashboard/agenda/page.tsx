@@ -7,6 +7,7 @@ import config from '@/config/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Appointment, Professional, AppointmentStatus } from '@/types';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
@@ -85,12 +86,12 @@ export default function AgendaPage() {
     const handleRefresh = () => { fetchData(); };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Agenda</h1>
-                    <p className="text-sm text-gray-500">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agenda</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {view === 'day'
                             ? format(currentDate, "EEEE d 'de' MMMM, yyyy", { locale: es })
                             : `${format(weekStart, "d MMM", { locale: es })} - ${format(addDays(weekStart, 6), "d MMM yyyy", { locale: es })}`
@@ -121,22 +122,24 @@ export default function AgendaPage() {
             <Card>
                 <CardContent className="p-0 overflow-auto">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : (
                         <div className="min-w-[700px]">
                             {/* Day headers */}
-                            <div className="grid border-b border-gray-200 sticky top-0 bg-white z-10"
+                            <div className="grid border-b border-border sticky top-0 bg-card z-10"
                                 style={{ gridTemplateColumns: view === 'week' ? '60px repeat(7, 1fr)' : '60px 1fr' }}
                             >
-                                <div className="p-2 border-r border-gray-100" />
+                                <div className="p-2 border-r border-border" />
                                 {(view === 'week' ? weekDays : [currentDate]).map((day, i) => (
-                                    <div key={i} className={`p-3 text-center border-r border-gray-100 ${isSameDay(day, new Date()) ? 'bg-blue-50' : ''}`}>
-                                        <p className="text-xs text-gray-500 uppercase">
+                                    <div key={i} className={`p-3 text-center border-r border-border ${isSameDay(day, new Date()) ? 'bg-primary/5' : ''}`}>
+                                        <p className="text-xs text-muted-foreground uppercase tracking-wide">
                                             {format(day, 'EEE', { locale: es })}
                                         </p>
-                                        <p className={`text-lg font-semibold ${isSameDay(day, new Date()) ? 'text-blue-600' : 'text-gray-900'}`}>
+                                        <p className={`text-lg font-semibold tracking-tight ${isSameDay(day, new Date()) ? 'text-primary' : 'text-foreground'}`}>
                                             {format(day, 'd')}
                                         </p>
                                     </div>
@@ -145,23 +148,23 @@ export default function AgendaPage() {
 
                             {/* Time grid */}
                             {HOURS.map(hour => (
-                                <div key={hour} className="grid border-b border-gray-100"
+                                <div key={hour} className="grid border-b border-border"
                                     style={{ gridTemplateColumns: view === 'week' ? '60px repeat(7, 1fr)' : '60px 1fr' }}
                                 >
-                                    <div className="p-2 text-xs text-gray-400 text-right pr-3 border-r border-gray-100">
+                                    <div className="p-2 text-xs text-muted-foreground text-right pr-3 border-r border-border">
                                         {String(hour).padStart(2, '0')}:00
                                     </div>
                                     {(view === 'week' ? weekDays : [currentDate]).map((day, i) => {
                                         const dayApts = getAppointmentsForDayHour(day, hour);
                                         return (
-                                            <div key={i} className="p-1 border-r border-gray-100 min-h-[60px] relative">
+                                            <div key={i} className="p-1 border-r border-border min-h-[60px] relative">
                                                 {dayApts.map(apt => (
                                                     <button
                                                         key={apt.id}
                                                         onClick={() => setSelectedAppointment(apt)}
-                                                        className={`w-full text-left p-1.5 mb-1 rounded border-l-4 text-xs cursor-pointer hover:shadow-md transition-shadow ${statusColors[apt.status]}`}
+                                                        className={`w-full text-left p-1.5 mb-1 rounded-md border-l-4 text-xs cursor-pointer hover:shadow-sm transition-shadow ${statusColors[apt.status]}`}
                                                     >
-                                                        <p className="font-medium truncate">{apt.start_time?.slice(0, 5)} {apt.client_name}</p>
+                                                        <p className="font-medium truncate text-gray-900">{apt.start_time?.slice(0, 5)} {apt.client_name}</p>
                                                         <p className="text-gray-500 truncate">{apt.service?.name}</p>
                                                     </button>
                                                 ))}
@@ -179,7 +182,7 @@ export default function AgendaPage() {
             {professionals.length > 0 && (
                 <div className="flex flex-wrap gap-3">
                     {professionals.filter(p => p.active).map(p => (
-                        <div key={p.id} className="flex items-center gap-2 text-sm text-gray-600">
+                        <div key={p.id} className="flex items-center gap-2 text-sm text-muted-foreground">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
                             {p.name}
                         </div>

@@ -12,7 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Loader2, Clock } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Plus, Pencil, Trash2, Loader2, Clock, Sparkles } from 'lucide-react';
 import { Service } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -126,20 +128,34 @@ export default function ServiciosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Servicios</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Servicios</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Gestiona los servicios que ofreces y sus precios.</p>
+                </div>
                 <Button onClick={openNew} className="gap-1"><Plus className="h-4 w-4" /> Nuevo servicio</Button>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : services.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay servicios registrados</div>
+                        <EmptyState
+                            icon={Sparkles}
+                            title="Aun no hay servicios"
+                            description="Crea tu primer servicio para empezar a recibir reservas."
+                            action={
+                                <Button onClick={openNew} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nuevo servicio
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -160,7 +176,7 @@ export default function ServiciosPage() {
                                         <TableCell className="font-medium">{s.name}</TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-1 text-sm">
-                                                <Clock className="h-3.5 w-3.5 text-gray-400" />
+                                                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                                                 {s.duration_minutes} min
                                             </div>
                                         </TableCell>
@@ -178,7 +194,7 @@ export default function ServiciosPage() {
                                                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(s)}>
                                                     <Pencil className="h-3.5 w-3.5" />
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="h-7 w-7 text-red-600" onClick={() => handleDelete(s.id)}>
+                                                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleDelete(s.id)}>
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>
                                             </div>

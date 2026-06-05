@@ -12,7 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Search, Eye, Pencil, ChevronLeft, ChevronRight, Loader2, Calendar, HeartPulse } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Search, Eye, Pencil, ChevronLeft, ChevronRight, Loader2, Calendar, HeartPulse, Users } from 'lucide-react';
 import Link from 'next/link';
 import { ClientContact, Pagination, AppointmentStatus } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -125,13 +127,13 @@ export default function ClientesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-4">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Clientes</h1>
 
             <Card>
                 <CardContent className="p-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Buscar por nombre, email o telefono..."
                             value={search}
@@ -145,11 +147,17 @@ export default function ClientesPage() {
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : clients.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No se encontraron clientes</div>
+                        <EmptyState
+                            icon={Users}
+                            title={search ? 'Sin resultados' : 'Aun no hay clientes'}
+                            description={search ? 'No se encontraron clientes con ese criterio de busqueda.' : 'Los clientes apareceran aqui a medida que reserven turnos.'}
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -175,7 +183,7 @@ export default function ClientesPage() {
                                             {client.no_show_count > 0 ? (
                                                 <Badge variant="destructive" className="text-xs">{client.no_show_count}</Badge>
                                             ) : (
-                                                <span className="text-sm text-gray-400">0</span>
+                                                <span className="text-sm text-muted-foreground">0</span>
                                             )}
                                         </TableCell>
                                         <TableCell>
@@ -205,12 +213,12 @@ export default function ClientesPage() {
 
             {pagination && pagination.totalPages > 1 && (
                 <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-500">{pagination.totalItems} clientes</p>
+                    <p className="text-sm text-muted-foreground">{pagination.totalItems} clientes</p>
                     <div className="flex gap-1">
                         <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <span className="px-3 py-1 text-sm text-gray-700">{page} / {pagination.totalPages}</span>
+                        <span className="px-3 py-1 text-sm text-foreground">{page} / {pagination.totalPages}</span>
                         <Button size="sm" variant="outline" disabled={page >= pagination.totalPages} onClick={() => setPage(p => p + 1)}>
                             <ChevronRight className="h-4 w-4" />
                         </Button>

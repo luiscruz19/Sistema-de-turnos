@@ -10,18 +10,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, CheckCircle, XCircle, UserX, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Plus, CheckCircle, XCircle, UserX, Eye, ChevronLeft, ChevronRight, CalendarX } from 'lucide-react';
 import { Appointment, Professional, Service, AppointmentStatus, Pagination } from '@/types';
 import AppointmentDetailModal from '@/components/appointments/AppointmentDetailModal';
 import NuevoTurnoModal from '@/components/appointments/NuevoTurnoModal';
 import { useToast } from '@/hooks/use-toast';
 
-const statusConfig: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {
-    pending: { label: 'Pendiente', color: 'text-yellow-700', bg: 'bg-yellow-100' },
-    confirmed: { label: 'Confirmado', color: 'text-blue-700', bg: 'bg-blue-100' },
-    completed: { label: 'Completado', color: 'text-green-700', bg: 'bg-green-100' },
-    cancelled: { label: 'Cancelado', color: 'text-red-700', bg: 'bg-red-100' },
-    no_show: { label: 'Ausente', color: 'text-gray-700', bg: 'bg-gray-100' },
+const statusConfig: Record<AppointmentStatus, { label: string; variant: 'default' | 'secondary' | 'success' | 'warning' | 'destructive' | 'info' }> = {
+    pending: { label: 'Pendiente', variant: 'warning' },
+    confirmed: { label: 'Confirmado', variant: 'info' },
+    completed: { label: 'Completado', variant: 'success' },
+    cancelled: { label: 'Cancelado', variant: 'destructive' },
+    no_show: { label: 'Ausente', variant: 'secondary' },
 };
 
 const sourceLabels: Record<string, string> = {
@@ -108,9 +110,12 @@ export default function TurnosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Turnos</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Turnos</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Consulta, filtra y gestiona todos los turnos.</p>
+                </div>
                 <Button onClick={() => setShowNewModal(true)} className="gap-1">
                     <Plus className="h-4 w-4" /> Nuevo turno
                 </Button>
@@ -121,15 +126,15 @@ export default function TurnosPage() {
                 <CardContent className="p-4">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div>
-                            <label className="text-xs text-gray-500 mb-1 block">Desde</label>
+                            <label className="text-xs text-muted-foreground mb-1 block">Desde</label>
                             <Input type="date" value={filterFrom} onChange={e => { setFilterFrom(e.target.value); setPage(1); }} />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500 mb-1 block">Hasta</label>
+                            <label className="text-xs text-muted-foreground mb-1 block">Hasta</label>
                             <Input type="date" value={filterTo} onChange={e => { setFilterTo(e.target.value); setPage(1); }} />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500 mb-1 block">Estado</label>
+                            <label className="text-xs text-muted-foreground mb-1 block">Estado</label>
                             <Select value={filterStatus} onValueChange={v => { setFilterStatus(v); setPage(1); }}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -143,7 +148,7 @@ export default function TurnosPage() {
                             </Select>
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500 mb-1 block">Profesional</label>
+                            <label className="text-xs text-muted-foreground mb-1 block">Profesional</label>
                             <Select value={filterProfessional} onValueChange={v => { setFilterProfessional(v); setPage(1); }}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -162,11 +167,22 @@ export default function TurnosPage() {
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : appointments.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No se encontraron turnos</div>
+                        <EmptyState
+                            icon={CalendarX}
+                            title="No se encontraron turnos"
+                            description="Proba ajustar los filtros o crea un nuevo turno."
+                            action={
+                                <Button onClick={() => setShowNewModal(true)} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nuevo turno
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -192,7 +208,7 @@ export default function TurnosPage() {
                                             <TableCell className="text-sm">{apt.service?.name || '-'}</TableCell>
                                             <TableCell className="text-sm font-medium">{apt.client_name}</TableCell>
                                             <TableCell>
-                                                <Badge className={`${sc.bg} ${sc.color} border-0`}>{sc.label}</Badge>
+                                                <Badge variant={sc.variant}>{sc.label}</Badge>
                                             </TableCell>
                                             <TableCell className="text-sm">{sourceLabels[apt.source] || apt.source}</TableCell>
                                             <TableCell>

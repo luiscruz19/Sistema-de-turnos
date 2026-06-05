@@ -21,14 +21,14 @@ export default function Header({ onMenuToggle }: HeaderProps) {
     if (!user) return null;
 
     return (
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6">
             <div className="flex items-center gap-4">
                 <button
                     onClick={() => onMenuToggle?.()}
-                    className="p-2 rounded-md hover:bg-gray-100 md:hidden"
+                    className="p-2 rounded-lg text-muted-foreground hover:bg-muted md:hidden"
                     type="button"
                 >
-                    <Menu className="h-6 w-6 text-gray-600" />
+                    <Menu className="h-5 w-5" />
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600 hidden sm:inline">{user.nombre || user.email}</span>
+                <span className="text-sm text-muted-foreground hidden sm:inline">{user.nombre || user.email}</span>
                 <Button size="sm" variant="ghost" onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
                 </Button>
