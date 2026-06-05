@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, ArrowLeft, Calendar, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -164,8 +165,15 @@ export default function ProfesionalGoogleCalendarPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+                <div className="flex items-center gap-3 border-b border-border pb-4">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-7 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                    </div>
+                </div>
+                <Skeleton className="h-64 w-full" />
             </div>
         );
     }
@@ -173,8 +181,8 @@ export default function ProfesionalGoogleCalendarPage() {
     const connected = syncStatus?.connected;
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center gap-3">
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-4">
                 <Button
                     size="icon"
                     variant="ghost"
@@ -183,8 +191,8 @@ export default function ProfesionalGoogleCalendarPage() {
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Google Calendar</h1>
-                    <p className="text-sm text-gray-500">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Google Calendar</h1>
+                    <p className="text-sm text-muted-foreground">
                         {professional?.name || `Profesional #${professionalId}`}
                     </p>
                 </div>
@@ -194,7 +202,7 @@ export default function ProfesionalGoogleCalendarPage() {
                 <CardHeader>
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-md bg-blue-50 text-blue-600">
+                            <div className="p-2 rounded-md bg-primary/10 text-primary">
                                 <Calendar className="h-5 w-5" />
                             </div>
                             <div>
@@ -205,12 +213,12 @@ export default function ProfesionalGoogleCalendarPage() {
                             </div>
                         </div>
                         {connected ? (
-                            <Badge className="bg-green-100 text-green-700 border-0">
+                            <Badge variant="success">
                                 <CheckCircle2 className="h-3 w-3 mr-1" />
                                 Conectado
                             </Badge>
                         ) : (
-                            <Badge className="bg-gray-100 text-gray-600 border-0">
+                            <Badge variant="secondary">
                                 <XCircle className="h-3 w-3 mr-1" />
                                 Sin conectar
                             </Badge>
@@ -222,14 +230,14 @@ export default function ProfesionalGoogleCalendarPage() {
                         <>
                             {syncStatus?.google_email && (
                                 <div>
-                                    <p className="text-xs text-gray-500">Cuenta conectada</p>
+                                    <p className="text-xs text-muted-foreground">Cuenta conectada</p>
                                     <p className="text-sm font-medium">{syncStatus.google_email}</p>
                                 </div>
                             )}
 
                             {syncStatus?.last_sync_at && (
                                 <div>
-                                    <p className="text-xs text-gray-500">Ultima sincronizacion</p>
+                                    <p className="text-xs text-muted-foreground">Ultima sincronizacion</p>
                                     <p className="text-sm">{new Date(syncStatus.last_sync_at).toLocaleString('es-AR')}</p>
                                 </div>
                             )}
@@ -241,10 +249,10 @@ export default function ProfesionalGoogleCalendarPage() {
                                     disabled={toggling}
                                 />
                                 <Label className="text-sm">Sincronizacion activada</Label>
-                                {toggling && <Loader2 className="h-3 w-3 animate-spin text-gray-400" />}
+                                {toggling && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
                             </div>
 
-                            <div className="flex gap-2 pt-2 border-t">
+                            <div className="flex gap-2 pt-2 border-t border-border">
                                 <Button
                                     size="sm"
                                     variant="outline"
@@ -258,7 +266,7 @@ export default function ProfesionalGoogleCalendarPage() {
                                     variant="ghost"
                                     onClick={handleDisconnect}
                                     disabled={disconnecting}
-                                    className="text-red-600 hover:text-red-700"
+                                    className="text-destructive hover:text-destructive"
                                 >
                                     {disconnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
                                     Desconectar
@@ -267,7 +275,7 @@ export default function ProfesionalGoogleCalendarPage() {
                         </>
                     ) : (
                         <div className="space-y-3">
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                                 Conecta la cuenta de Google de este profesional para sincronizar sus turnos
                                 automaticamente. Cada turno confirmado se agrega como evento en su Google Calendar.
                             </p>

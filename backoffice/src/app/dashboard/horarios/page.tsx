@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiHeaders } from '@/utils/api-headers';
 import config from '@/config/config';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +14,9 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Loader2, Clock, Ban } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Plus, Trash2, Loader2, Clock, Ban, CalendarOff } from 'lucide-react';
 import { Professional, Schedule, ScheduleException } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -149,9 +152,12 @@ export default function HorariosPage() {
     }));
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Horarios</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Horarios</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Define la disponibilidad semanal y las excepciones por dia.</p>
+                </div>
                 <div className="flex gap-2">
                     <Select value={selectedProfessional} onValueChange={setSelectedProfessional}>
                         <SelectTrigger className="w-[180px]"><SelectValue placeholder="Profesional" /></SelectTrigger>
@@ -179,8 +185,10 @@ export default function HorariosPage() {
                     </div>
 
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {Array.from({ length: 7 }).map((_, i) => (
+                                <Skeleton key={i} className="h-32 w-full" />
+                            ))}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -191,16 +199,16 @@ export default function HorariosPage() {
                                     </CardHeader>
                                     <CardContent>
                                         {day.blocks.length === 0 ? (
-                                            <p className="text-sm text-gray-400">Sin horario</p>
+                                            <p className="text-sm text-muted-foreground">Sin horario</p>
                                         ) : (
                                             <div className="space-y-2">
                                                 {day.blocks.map(block => (
-                                                    <div key={block.id} className="flex items-center justify-between bg-blue-50 rounded-md px-3 py-2">
+                                                    <div key={block.id} className="flex items-center justify-between bg-primary/10 rounded-md px-3 py-2">
                                                         <div className="flex items-center gap-2">
-                                                            <Clock className="h-3.5 w-3.5 text-blue-500" />
+                                                            <Clock className="h-3.5 w-3.5 text-primary" />
                                                             <span className="text-sm font-medium">{block.start_time?.slice(0, 5)} - {block.end_time?.slice(0, 5)}</span>
                                                         </div>
-                                                        <Button size="icon" variant="ghost" className="h-6 w-6 text-red-500" onClick={() => handleDeleteSchedule(block.id)}>
+                                                        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => handleDeleteSchedule(block.id)}>
                                                             <Trash2 className="h-3 w-3" />
                                                         </Button>
                                                     </div>
@@ -217,16 +225,16 @@ export default function HorariosPage() {
                                 </CardHeader>
                                 <CardContent>
                                     {schedulesByDay[0].blocks.length === 0 ? (
-                                        <p className="text-sm text-gray-400">Sin horario</p>
+                                        <p className="text-sm text-muted-foreground">Sin horario</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {schedulesByDay[0].blocks.map(block => (
-                                                <div key={block.id} className="flex items-center justify-between bg-blue-50 rounded-md px-3 py-2">
+                                                <div key={block.id} className="flex items-center justify-between bg-primary/10 rounded-md px-3 py-2">
                                                     <div className="flex items-center gap-2">
-                                                        <Clock className="h-3.5 w-3.5 text-blue-500" />
+                                                        <Clock className="h-3.5 w-3.5 text-primary" />
                                                         <span className="text-sm font-medium">{block.start_time?.slice(0, 5)} - {block.end_time?.slice(0, 5)}</span>
                                                     </div>
-                                                    <Button size="icon" variant="ghost" className="h-6 w-6 text-red-500" onClick={() => handleDeleteSchedule(block.id)}>
+                                                    <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => handleDeleteSchedule(block.id)}>
                                                         <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </div>
@@ -249,7 +257,11 @@ export default function HorariosPage() {
                     <Card>
                         <CardContent className="p-0">
                             {exceptions.length === 0 ? (
-                                <div className="text-center py-12 text-gray-500">No hay excepciones registradas</div>
+                                <EmptyState
+                                    icon={CalendarOff}
+                                    title="Sin excepciones"
+                                    description="Crea una excepcion para bloquear o modificar el horario de un dia especifico."
+                                />
                             ) : (
                                 <Table>
                                     <TableHeader>
@@ -268,19 +280,19 @@ export default function HorariosPage() {
                                                 <TableCell className="text-sm">{exc.professional?.name || 'General'}</TableCell>
                                                 <TableCell>
                                                     {exc.is_blocked ? (
-                                                        <div className="flex items-center gap-1 text-red-600 text-sm">
+                                                        <Badge variant="destructive" className="gap-1">
                                                             <Ban className="h-3.5 w-3.5" /> Bloqueado
-                                                        </div>
+                                                        </Badge>
                                                     ) : (
-                                                        <div className="flex items-center gap-1 text-blue-600 text-sm">
+                                                        <Badge variant="info" className="gap-1">
                                                             <Clock className="h-3.5 w-3.5" /> Horario especial
-                                                        </div>
+                                                        </Badge>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-sm">
                                                     {exc.is_blocked ? 'Todo el dia' : `${exc.start_time?.slice(0, 5)} - ${exc.end_time?.slice(0, 5)}`}
                                                 </TableCell>
-                                                <TableCell className="text-sm text-gray-600">{exc.reason || '-'}</TableCell>
+                                                <TableCell className="text-sm text-muted-foreground">{exc.reason || '-'}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

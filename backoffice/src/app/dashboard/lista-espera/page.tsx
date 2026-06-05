@@ -9,8 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { Trash2, Loader2, Clock, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'info';
 
 type WaitlistStatus = 'waiting' | 'notified' | 'booked' | 'cancelled';
 
@@ -29,11 +33,11 @@ interface WaitlistEntry {
     createdAt: string;
 }
 
-const statusConfig: Record<WaitlistStatus, { label: string; className: string }> = {
-    waiting: { label: 'Esperando', className: 'bg-yellow-100 text-yellow-700 border-0' },
-    notified: { label: 'Notificado', className: 'bg-blue-100 text-blue-700 border-0' },
-    booked: { label: 'Reservado', className: 'bg-green-100 text-green-700 border-0' },
-    cancelled: { label: 'Cancelado', className: 'bg-gray-100 text-gray-500 border-0' },
+const statusConfig: Record<WaitlistStatus, { label: string; variant: BadgeVariant }> = {
+    waiting: { label: 'Esperando', variant: 'warning' },
+    notified: { label: 'Notificado', variant: 'info' },
+    booked: { label: 'Reservado', variant: 'success' },
+    cancelled: { label: 'Cancelado', variant: 'secondary' },
 };
 
 const ALL_STATUSES = 'all';
@@ -105,18 +109,16 @@ export default function ListaEsperaPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Clock className="h-6 w-6 text-gray-700" />
-                    <h1 className="text-2xl font-semibold text-gray-900">Lista de espera</h1>
-                </div>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="border-b border-border pb-4">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">Lista de espera</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Clientes esperando un cupo. Notificalos cuando se libere un turno.</p>
             </div>
 
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600 shrink-0">Filtrar por estado:</span>
+                        <span className="text-sm text-muted-foreground shrink-0">Filtrar por estado:</span>
                         <Select
                             value={filterStatus}
                             onValueChange={val => setFilterStatus(val as WaitlistStatus | typeof ALL_STATUSES)}
@@ -138,13 +140,17 @@ export default function ListaEsperaPage() {
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : entries.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">
-                            {filterStatus === ALL_STATUSES ? 'No hay entradas en la lista de espera' : `No hay entradas con estado "${statusConfig[filterStatus as WaitlistStatus]?.label}"`}
-                        </div>
+                        <EmptyState
+                            icon={Clock}
+                            title={filterStatus === ALL_STATUSES ? 'Lista de espera vacia' : 'Sin resultados'}
+                            description={filterStatus === ALL_STATUSES ? 'Aun no hay clientes en la lista de espera.' : `No hay entradas con estado "${statusConfig[filterStatus as WaitlistStatus]?.label}".`}
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -165,7 +171,7 @@ export default function ListaEsperaPage() {
                                             <TableCell className="font-medium">{entry.client_name}</TableCell>
                                             <TableCell className="text-sm">
                                                 <div>{entry.client_email || '-'}</div>
-                                                <div className="text-gray-500">{entry.client_phone || ''}</div>
+                                                <div className="text-muted-foreground">{entry.client_phone || ''}</div>
                                             </TableCell>
                                             <TableCell className="text-sm">
                                                 {entry.preferred_date
@@ -173,9 +179,9 @@ export default function ListaEsperaPage() {
                                                     : '-'}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge className={sc.className}>{sc.label}</Badge>
+                                                <Badge variant={sc.variant}>{sc.label}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-sm text-gray-500">
+                                            <TableCell className="text-sm text-muted-foreground">
                                                 {new Date(entry.createdAt).toLocaleDateString('es-AR')}
                                             </TableCell>
                                             <TableCell>
@@ -198,7 +204,7 @@ export default function ListaEsperaPage() {
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
-                                                        className="h-7 w-7 text-red-500 hover:text-red-600"
+                                                        className="h-7 w-7 text-destructive hover:text-destructive"
                                                         onClick={() => handleDelete(entry.id)}
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />

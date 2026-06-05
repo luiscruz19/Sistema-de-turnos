@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { Plus, Trash2, Loader2, ClipboardList } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -151,25 +153,36 @@ export default function FormulariosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <ClipboardList className="h-6 w-6 text-gray-700" />
-                    <h1 className="text-2xl font-semibold text-gray-900">Formularios de anamnesis</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Formularios de anamnesis</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Crea cuestionarios para recolectar datos de tus clientes.</p>
                 </div>
-                <Button onClick={openNewModal}>
-                    <Plus className="h-4 w-4 mr-1" /> Nuevo formulario
+                <Button onClick={openNewModal} className="gap-1">
+                    <Plus className="h-4 w-4" /> Nuevo formulario
                 </Button>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : forms.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay formularios creados</div>
+                        <EmptyState
+                            icon={ClipboardList}
+                            title="Aun no hay formularios"
+                            description="Crea tu primer formulario de anamnesis para recolectar informacion de tus clientes."
+                            action={
+                                <Button onClick={openNewModal} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nuevo formulario
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -185,15 +198,15 @@ export default function FormulariosPage() {
                                 {forms.map(form => (
                                     <TableRow key={form.id}>
                                         <TableCell className="font-medium">{form.name}</TableCell>
-                                        <TableCell className="text-sm text-gray-500">
+                                        <TableCell className="text-sm text-muted-foreground">
                                             {form.questions?.length ?? 0} preguntas
                                         </TableCell>
                                         <TableCell>
-                                            <Badge className={form.active ? 'bg-green-100 text-green-700 border-0' : 'bg-gray-100 text-gray-500 border-0'}>
+                                            <Badge variant={form.active ? 'success' : 'secondary'}>
                                                 {form.active ? 'Activo' : 'Inactivo'}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-sm text-gray-500">
+                                        <TableCell className="text-sm text-muted-foreground">
                                             {new Date(form.createdAt).toLocaleDateString('es-AR')}
                                         </TableCell>
                                         <TableCell>
@@ -209,7 +222,7 @@ export default function FormulariosPage() {
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    className="h-7 w-7 text-red-500 hover:text-red-600"
+                                                    className="h-7 w-7 text-destructive hover:text-destructive"
                                                     onClick={() => handleDelete(form.id)}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -276,7 +289,7 @@ export default function FormulariosPage() {
                                             type="button"
                                             size="icon"
                                             variant="ghost"
-                                            className="h-9 w-9 text-red-500 hover:text-red-600 shrink-0"
+                                            className="h-9 w-9 text-destructive hover:text-destructive shrink-0"
                                             onClick={() => removeQuestion(i)}
                                         >
                                             <Trash2 className="h-3.5 w-3.5" />

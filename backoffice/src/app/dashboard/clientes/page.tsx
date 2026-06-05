@@ -237,40 +237,40 @@ export default function ClientesPage() {
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-3 text-sm">
                                 <div>
-                                    <p className="text-gray-500">Email</p>
+                                    <p className="text-muted-foreground">Email</p>
                                     <p className="font-medium">{selectedClient.email || '-'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Telefono</p>
+                                    <p className="text-muted-foreground">Telefono</p>
                                     <p className="font-medium">{selectedClient.phone || '-'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Total turnos</p>
+                                    <p className="text-muted-foreground">Total turnos</p>
                                     <p className="font-medium">{selectedClient.appointment_count}</p>
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">No-shows</p>
+                                    <p className="text-muted-foreground">No-shows</p>
                                     <p className="font-medium">{selectedClient.no_show_count}</p>
                                 </div>
                             </div>
                             {selectedClient.notes && (
                                 <div className="text-sm">
-                                    <p className="text-gray-500">Notas</p>
-                                    <p className="text-gray-700">{selectedClient.notes}</p>
+                                    <p className="text-muted-foreground">Notas</p>
+                                    <p className="text-foreground">{selectedClient.notes}</p>
                                 </div>
                             )}
                             {selectedClient.appointments && selectedClient.appointments.length > 0 && (
                                 <div>
-                                    <p className="text-sm font-medium text-gray-700 mb-2">Historial de turnos</p>
+                                    <p className="text-sm font-medium text-foreground mb-2">Historial de turnos</p>
                                     <div className="space-y-2 max-h-60 overflow-y-auto">
                                         {selectedClient.appointments.map(apt => {
                                             const sc = statusConfig[apt.status];
                                             return (
                                                 <div key={apt.id} className="flex items-center gap-3 text-sm border rounded-md p-2">
-                                                    <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
+                                                    <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                                                     <div className="flex-1 min-w-0">
                                                         <p className="truncate">{apt.date} {apt.start_time?.slice(0, 5)}</p>
-                                                        <p className="text-gray-500 text-xs truncate">{apt.service?.name}</p>
+                                                        <p className="text-muted-foreground text-xs truncate">{apt.service?.name}</p>
                                                     </div>
                                                     <Badge className={`${sc.bg} ${sc.color} border-0 text-xs`}>{sc.label}</Badge>
                                                 </div>

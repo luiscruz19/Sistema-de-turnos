@@ -9,8 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { Plus, Trash2, Loader2, Package } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -145,25 +148,36 @@ export default function PaquetesPage() {
         new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Package className="h-6 w-6 text-gray-700" />
-                    <h1 className="text-2xl font-semibold text-gray-900">Paquetes de sesiones</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Paquetes de sesiones</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Crea bonos de sesiones con vigencia y precio para tus clientes.</p>
                 </div>
-                <Button onClick={openNewModal}>
-                    <Plus className="h-4 w-4 mr-1" /> Nuevo paquete
+                <Button onClick={openNewModal} className="gap-1">
+                    <Plus className="h-4 w-4" /> Nuevo paquete
                 </Button>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : packages.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay paquetes creados</div>
+                        <EmptyState
+                            icon={Package}
+                            title="Aun no hay paquetes"
+                            description="Crea tu primer paquete de sesiones para ofrecer bonos a tus clientes."
+                            action={
+                                <Button onClick={openNewModal} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nuevo paquete
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -182,14 +196,14 @@ export default function PaquetesPage() {
                                         <TableCell>
                                             <p className="font-medium">{pkg.name}</p>
                                             {pkg.description && (
-                                                <p className="text-xs text-gray-500 mt-0.5">{pkg.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">{pkg.description}</p>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-sm">{pkg.sessions_total} sesiones</TableCell>
                                         <TableCell className="text-sm">{pkg.valid_days} dias</TableCell>
                                         <TableCell className="text-sm font-medium">{formatCurrency(pkg.price)}</TableCell>
                                         <TableCell>
-                                            <Badge className={pkg.active ? 'bg-green-100 text-green-700 border-0' : 'bg-gray-100 text-gray-500 border-0'}>
+                                            <Badge variant={pkg.active ? 'success' : 'secondary'}>
                                                 {pkg.active ? 'Activo' : 'Inactivo'}
                                             </Badge>
                                         </TableCell>
@@ -197,7 +211,7 @@ export default function PaquetesPage() {
                                             <Button
                                                 size="icon"
                                                 variant="ghost"
-                                                className="h-7 w-7 text-red-500 hover:text-red-600"
+                                                className="h-7 w-7 text-destructive hover:text-destructive"
                                                 onClick={() => handleDelete(pkg.id)}
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
@@ -219,7 +233,7 @@ export default function PaquetesPage() {
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
-                            <Label>Nombre <span className="text-red-500">*</span></Label>
+                            <Label>Nombre <span className="text-destructive">*</span></Label>
                             <Input
                                 value={form.name}
                                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -236,7 +250,7 @@ export default function PaquetesPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <Label>Sesiones totales <span className="text-red-500">*</span></Label>
+                                <Label>Sesiones totales <span className="text-destructive">*</span></Label>
                                 <Input
                                     type="number"
                                     min="1"
@@ -246,7 +260,7 @@ export default function PaquetesPage() {
                                 />
                             </div>
                             <div>
-                                <Label>Dias de validez <span className="text-red-500">*</span></Label>
+                                <Label>Dias de validez <span className="text-destructive">*</span></Label>
                                 <Input
                                     type="number"
                                     min="1"
@@ -257,7 +271,7 @@ export default function PaquetesPage() {
                             </div>
                         </div>
                         <div>
-                            <Label>Precio <span className="text-red-500">*</span></Label>
+                            <Label>Precio <span className="text-destructive">*</span></Label>
                             <Input
                                 type="number"
                                 min="0"
@@ -268,12 +282,10 @@ export default function PaquetesPage() {
                             />
                         </div>
                         <div className="flex items-center gap-2">
-                            <input
+                            <Switch
                                 id="pkg-active"
-                                type="checkbox"
                                 checked={form.active}
-                                onChange={e => setForm(f => ({ ...f, active: e.target.checked }))}
-                                className="h-4 w-4 rounded border-gray-300"
+                                onCheckedChange={v => setForm(f => ({ ...f, active: v }))}
                             />
                             <Label htmlFor="pkg-active" className="cursor-pointer">Activo</Label>
                         </div>

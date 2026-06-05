@@ -8,8 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ExternalLink, Undo2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Loader2, ExternalLink, Undo2, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'info';
 
 interface PaymentIntent {
     id: number;
@@ -26,12 +30,12 @@ interface PaymentIntent {
     clientContact?: { id: number; name: string; email?: string | null };
 }
 
-const STATUS: Record<string, { label: string; classes: string }> = {
-    pending: { label: 'Pendiente', classes: 'bg-yellow-100 text-yellow-700' },
-    paid: { label: 'Pagado', classes: 'bg-green-100 text-green-700' },
-    expired: { label: 'Expirado', classes: 'bg-gray-100 text-gray-600' },
-    cancelled: { label: 'Cancelado', classes: 'bg-red-100 text-red-600' },
-    refunded: { label: 'Reembolsado', classes: 'bg-blue-100 text-blue-700' },
+const STATUS: Record<string, { label: string; variant: BadgeVariant }> = {
+    pending: { label: 'Pendiente', variant: 'warning' },
+    paid: { label: 'Pagado', variant: 'success' },
+    expired: { label: 'Expirado', variant: 'secondary' },
+    cancelled: { label: 'Cancelado', variant: 'destructive' },
+    refunded: { label: 'Reembolsado', variant: 'info' },
 };
 
 export default function CobrosPage() {
@@ -84,20 +88,26 @@ export default function CobrosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Cobros</h1>
-                <p className="text-sm text-gray-500">Senas y pagos de turnos procesados con Mercado Pago.</p>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="border-b border-border pb-4">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">Cobros</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Senas y pagos de turnos procesados con Mercado Pago.</p>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : rows.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay cobros todavia</div>
+                        <EmptyState
+                            icon={CreditCard}
+                            title="Aun no hay cobros"
+                            description="Los pagos y senas de turnos apareceran aqui cuando se procesen con Mercado Pago."
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -113,7 +123,7 @@ export default function CobrosPage() {
                             </TableHeader>
                             <TableBody>
                                 {rows.map(r => {
-                                    const s = STATUS[r.status] || { label: r.status, classes: 'bg-gray-100 text-gray-600' };
+                                    const s = STATUS[r.status] || { label: r.status, variant: 'secondary' as BadgeVariant };
                                     return (
                                         <TableRow key={r.id}>
                                             <TableCell className="text-sm">{new Date(r.createdAt).toLocaleString('es-AR')}</TableCell>
@@ -125,13 +135,13 @@ export default function CobrosPage() {
                                                 {r.currency} {Number(r.amount).toLocaleString('es-AR')}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge className={`${s.classes} border-0 text-xs`}>{s.label}</Badge>
+                                                <Badge variant={s.variant}>{s.label}</Badge>
                                             </TableCell>
                                             <TableCell>
                                                 {r.mode === 'simulated' ? (
-                                                    <Badge className="bg-orange-100 text-orange-700 border-0 text-xs">Simulado</Badge>
+                                                    <Badge variant="warning">Simulado</Badge>
                                                 ) : (
-                                                    <Badge className="bg-blue-100 text-blue-700 border-0 text-xs">Real</Badge>
+                                                    <Badge variant="info">Real</Badge>
                                                 )}
                                             </TableCell>
                                             <TableCell>

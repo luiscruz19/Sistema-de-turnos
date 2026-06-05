@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, ArrowLeft, Save, Plus, Trash2, Paperclip } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -182,21 +183,29 @@ export default function HistoriaClinicaPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+                <div className="flex items-center gap-3 border-b border-border pb-4">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-7 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                    </div>
+                </div>
+                <Skeleton className="h-72 w-full" />
+                <Skeleton className="h-48 w-full" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center gap-3">
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-4">
                 <Button size="icon" variant="ghost" onClick={() => router.push(`${config.basePath}/dashboard/clientes`)}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Historia clinica</h1>
-                    <p className="text-sm text-gray-500">{client?.name || `Cliente #${clientId}`}</p>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Historia clinica</h1>
+                    <p className="text-sm text-muted-foreground">{client?.name || `Cliente #${clientId}`}</p>
                 </div>
             </div>
 
@@ -286,16 +295,16 @@ export default function HistoriaClinicaPage() {
 
                     <div className="space-y-2">
                         {notes.length === 0 ? (
-                            <p className="text-sm text-gray-400">No hay notas todavia.</p>
+                            <p className="text-sm text-muted-foreground">No hay notas todavia.</p>
                         ) : notes.map(n => (
                             <div key={n.id} className="border rounded-md p-3 flex gap-3">
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm whitespace-pre-wrap">{n.content}</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <p className="text-xs text-gray-400">
+                                        <p className="text-xs text-muted-foreground">
                                             {n.professional?.name || 'Admin'} &middot; {new Date(n.createdAt).toLocaleString('es-AR')}
                                         </p>
-                                        {n.is_private && <Badge className="bg-orange-100 text-orange-700 border-0 text-xs">Privada</Badge>}
+                                        {n.is_private && <Badge variant="warning">Privada</Badge>}
                                     </div>
                                 </div>
                                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleDeleteNote(n.id)}>
@@ -323,9 +332,9 @@ export default function HistoriaClinicaPage() {
                     </Button>
                     <div className="space-y-1">
                         {attachments.length === 0 ? (
-                            <p className="text-sm text-gray-400">No hay adjuntos.</p>
+                            <p className="text-sm text-muted-foreground">No hay adjuntos.</p>
                         ) : attachments.map(a => (
-                            <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="block text-sm text-blue-600 hover:underline">
+                            <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="block text-sm text-primary hover:underline">
                                 <Paperclip className="h-3 w-3 inline mr-1" /> {a.file_name}
                             </a>
                         ))}

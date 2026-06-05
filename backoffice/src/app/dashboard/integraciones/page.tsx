@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, CheckCircle2, XCircle, CreditCard, Brain, MessageSquare, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -221,15 +222,17 @@ export default function IntegracionesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Integraciones</h1>
-                <p className="text-sm text-gray-500">Conecta tus cuentas de Mercado Pago, OpenAI, WhatsApp y Google Calendar.</p>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="border-b border-border pb-4">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">Integraciones</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Conecta tus cuentas de Mercado Pago, OpenAI, WhatsApp y Google Calendar.</p>
             </div>
 
             {loading ? (
-                <div className="flex items-center justify-center p-12">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Skeleton key={i} className="h-56 w-full" />
+                    ))}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,7 +245,7 @@ export default function IntegracionesPage() {
                                 <CardHeader>
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-md bg-blue-50 text-blue-600">
+                                            <div className="p-2 rounded-md bg-primary/10 text-primary">
                                                 <Icon className="h-5 w-5" />
                                             </div>
                                             <div>
@@ -251,12 +254,12 @@ export default function IntegracionesPage() {
                                             </div>
                                         </div>
                                         {connected ? (
-                                            <Badge className="bg-green-100 text-green-700 border-0">
+                                            <Badge variant="success">
                                                 <CheckCircle2 className="h-3 w-3 mr-1" />
                                                 Conectado
                                             </Badge>
                                         ) : (
-                                            <Badge className="bg-gray-100 text-gray-600 border-0">
+                                            <Badge variant="secondary">
                                                 <XCircle className="h-3 w-3 mr-1" />
                                                 Sin conectar
                                             </Badge>
@@ -266,7 +269,7 @@ export default function IntegracionesPage() {
                                 <CardContent className="space-y-3">
                                     {p.id === 'google_calendar' ? (
                                         <div className="space-y-2">
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-muted-foreground">
                                                 La conexion se hace con tu cuenta de Google (OAuth). Tambien podes conectar Google Calendar por profesional desde la seccion Profesionales.
                                             </p>
                                             <div className="flex gap-2">
@@ -323,10 +326,10 @@ export default function IntegracionesPage() {
                                         </>
                                     )}
                                     {row?.last_test_status === 'error' && row?.last_test_error && (
-                                        <p className="text-xs text-red-600">Ultimo error: {row.last_test_error}</p>
+                                        <p className="text-xs text-destructive">Ultimo error: {row.last_test_error}</p>
                                     )}
                                     {row?.last_tested_at && (
-                                        <p className="text-xs text-gray-400">
+                                        <p className="text-xs text-muted-foreground">
                                             Probado: {new Date(row.last_tested_at).toLocaleString('es-AR')}
                                         </p>
                                     )}

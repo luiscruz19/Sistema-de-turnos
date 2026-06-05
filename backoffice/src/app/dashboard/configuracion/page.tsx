@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Save, Copy, Check } from 'lucide-react';
 import { BusinessConfig } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -119,16 +120,24 @@ export default function ConfiguracionPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-12">
-                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+                <div className="flex items-center justify-between border-b border-border pb-4">
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-9 w-36" />
+                </div>
+                <Skeleton className="h-56 w-full" />
+                <Skeleton className="h-72 w-full" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Configuracion</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Configuracion</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Ajusta los datos del negocio, las reglas de reserva y las integraciones.</p>
+                </div>
                 <Button onClick={handleSave} disabled={saving} className="gap-1">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Guardar cambios
@@ -207,12 +216,12 @@ export default function ConfiguracionPage() {
                             <div className="flex items-center gap-2">
                                 <Label>Porcentaje:</Label>
                                 <Input type="number" value={form.deposit_percentage} onChange={e => setForm(f => ({ ...f, deposit_percentage: e.target.value }))} className="w-20" />
-                                <span className="text-sm text-gray-500">%</span>
+                                <span className="text-sm text-muted-foreground">%</span>
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 pt-2 border-t pt-4">
+                    <div className="flex items-center gap-4 pt-4 border-t border-border">
                         <div className="flex items-center gap-2">
                             <Switch checked={form.require_payment} onCheckedChange={v => setForm(f => ({ ...f, require_payment: v }))} />
                             <Label>Cobrar online al confirmar turno (Mercado Pago)</Label>
@@ -221,7 +230,7 @@ export default function ConfiguracionPage() {
                             <div className="flex items-center gap-2">
                                 <Label>Sena:</Label>
                                 <Input type="number" value={form.payment_advance_pct} onChange={e => setForm(f => ({ ...f, payment_advance_pct: e.target.value }))} className="w-20" />
-                                <span className="text-sm text-gray-500">% (0 = total)</span>
+                                <span className="text-sm text-muted-foreground">% (0 = total)</span>
                             </div>
                         )}
                     </div>
@@ -244,7 +253,7 @@ export default function ConfiguracionPage() {
                         <div className="flex items-center gap-2">
                             <Input value={configData.api_key} readOnly className="font-mono text-sm" />
                             <Button variant="outline" size="sm" onClick={copyApiKey} className="gap-1 shrink-0">
-                                {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                                {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                                 {copied ? 'Copiado' : 'Copiar'}
                             </Button>
                         </div>

@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { Plus, Trash2, Loader2, Users2, UserPlus, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -227,25 +229,36 @@ export default function ClasesGrupalesPage() {
         new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Users2 className="h-6 w-6 text-gray-700" />
-                    <h1 className="text-2xl font-semibold text-gray-900">Clases grupales</h1>
+        <div className="min-h-screen bg-muted/30 p-4 md:p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Clases grupales</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Programa clases con cupo e inscribe a tus clientes.</p>
                 </div>
-                <Button onClick={openNewModal}>
-                    <Plus className="h-4 w-4 mr-1" /> Nueva clase
+                <Button onClick={openNewModal} className="gap-1">
+                    <Plus className="h-4 w-4" /> Nueva clase
                 </Button>
             </div>
 
             <Card>
                 <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center p-12">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        <div className="space-y-2 p-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <Skeleton key={i} className="h-12 w-full" />
+                            ))}
                         </div>
                     ) : classes.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">No hay clases grupales creadas</div>
+                        <EmptyState
+                            icon={Users2}
+                            title="Aun no hay clases grupales"
+                            description="Crea tu primera clase grupal para empezar a recibir inscripciones."
+                            action={
+                                <Button onClick={openNewModal} size="sm" className="gap-1">
+                                    <Plus className="h-4 w-4" /> Nueva clase
+                                </Button>
+                            }
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -264,7 +277,7 @@ export default function ClasesGrupalesPage() {
                                         <TableCell>
                                             <p className="font-medium">{gc.title}</p>
                                             {gc.description && (
-                                                <p className="text-xs text-gray-500 mt-0.5">{gc.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">{gc.description}</p>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-sm">
@@ -274,7 +287,7 @@ export default function ClasesGrupalesPage() {
                                             {gc.start_time?.slice(0, 5)} - {gc.end_time?.slice(0, 5)}
                                         </TableCell>
                                         <TableCell className="text-sm">
-                                            <span className={gc.enrolled_count >= gc.capacity ? 'text-red-600 font-medium' : ''}>
+                                            <span className={gc.enrolled_count >= gc.capacity ? 'text-destructive font-medium' : ''}>
                                                 {gc.enrolled_count ?? 0} / {gc.capacity}
                                             </span>
                                         </TableCell>
@@ -293,7 +306,7 @@ export default function ClasesGrupalesPage() {
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    className="h-7 w-7 text-red-500 hover:text-red-600"
+                                                    className="h-7 w-7 text-destructive hover:text-destructive"
                                                     onClick={() => handleDelete(gc.id)}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -317,7 +330,7 @@ export default function ClasesGrupalesPage() {
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
-                            <Label>Titulo <span className="text-red-500">*</span></Label>
+                            <Label>Titulo <span className="text-destructive">*</span></Label>
                             <Input
                                 value={form.title}
                                 onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
@@ -333,7 +346,7 @@ export default function ClasesGrupalesPage() {
                             />
                         </div>
                         <div>
-                            <Label>Fecha <span className="text-red-500">*</span></Label>
+                            <Label>Fecha <span className="text-destructive">*</span></Label>
                             <Input
                                 type="date"
                                 value={form.date}
@@ -342,7 +355,7 @@ export default function ClasesGrupalesPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <Label>Hora inicio <span className="text-red-500">*</span></Label>
+                                <Label>Hora inicio <span className="text-destructive">*</span></Label>
                                 <Input
                                     type="time"
                                     value={form.start_time}
@@ -350,7 +363,7 @@ export default function ClasesGrupalesPage() {
                                 />
                             </div>
                             <div>
-                                <Label>Hora fin <span className="text-red-500">*</span></Label>
+                                <Label>Hora fin <span className="text-destructive">*</span></Label>
                                 <Input
                                     type="time"
                                     value={form.end_time}
@@ -360,7 +373,7 @@ export default function ClasesGrupalesPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <Label>Capacidad <span className="text-red-500">*</span></Label>
+                                <Label>Capacidad <span className="text-destructive">*</span></Label>
                                 <Input
                                     type="number"
                                     min="1"
@@ -402,13 +415,15 @@ export default function ClasesGrupalesPage() {
                     </DialogHeader>
 
                     {loadingEnrollments ? (
-                        <div className="flex items-center justify-center py-8">
-                            <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        <div className="space-y-2 py-4">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                                <Skeleton key={i} className="h-10 w-full" />
+                            ))}
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {/* Inscribir cliente */}
-                            <div className="border rounded-md p-3 bg-gray-50 space-y-2">
+                            <div className="border rounded-md p-3 bg-muted space-y-2">
                                 <Label className="text-sm font-medium">Inscribir cliente</Label>
                                 <div className="flex gap-2">
                                     <Input
@@ -430,25 +445,25 @@ export default function ClasesGrupalesPage() {
 
                             {/* Lista de inscriptos */}
                             <div>
-                                <p className="text-sm font-medium text-gray-700 mb-2">
+                                <p className="text-sm font-medium text-foreground mb-2">
                                     Inscriptos ({selectedClass?.enrollments?.length ?? 0} / {selectedClass?.capacity})
                                 </p>
                                 {!selectedClass?.enrollments || selectedClass.enrollments.length === 0 ? (
-                                    <p className="text-sm text-gray-500 text-center py-4">Sin inscriptos aun</p>
+                                    <p className="text-sm text-muted-foreground text-center py-4">Sin inscriptos aun</p>
                                 ) : (
                                     <div className="space-y-2 max-h-60 overflow-y-auto">
                                         {selectedClass.enrollments.map(enr => (
                                             <div key={enr.id} className="flex items-center justify-between text-sm border rounded-md p-2">
                                                 <div>
                                                     <p className="font-medium">{enr.client_name}</p>
-                                                    <p className="text-xs text-gray-500">
+                                                    <p className="text-xs text-muted-foreground">
                                                         Inscripto: {new Date(enr.enrolled_at).toLocaleDateString('es-AR')}
                                                     </p>
                                                 </div>
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    className="h-7 w-7 text-red-500 hover:text-red-600 shrink-0"
+                                                    className="h-7 w-7 text-destructive hover:text-destructive shrink-0"
                                                     onClick={() => handleUnenroll(enr.id)}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
