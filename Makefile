@@ -8,11 +8,16 @@ MICROS  = microservicios-turnos/docker-compose.yml
 .PHONY: up down logs ps migrate seed
 
 ## Levanta red, infraestructura, microservicios y servicios core
-up:
+up: .env
 	docker network create net-shared 2>/dev/null || true
 	docker compose -f $(INFRA) up -d
 	docker compose -f $(MICROS) up -d
 	docker compose up -d
+
+## .env: si no existe, lo crea a partir del ejemplo
+.env:
+	cp .env.example .env
+	@echo ">> Cree .env desde .env.example. Revisa los valores antes de usar en serio."
 
 ## Baja los tres compose (servicios, microservicios e infraestructura)
 down:
