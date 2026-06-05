@@ -35,7 +35,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
                 logout();
                 router.push('/auth/login');
             });
-    }, [token, logout, setIsLoading, setUser, router]);
+        // Solo re-validar cuando cambia el token. Incluir router/setters dispara un loop de peticiones.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token]);
 
     if (isLoading) {
         return <FullScreenLoader />;
