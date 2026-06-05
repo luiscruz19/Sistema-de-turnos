@@ -1,0 +1,24 @@
+networks:
+    net-shared:
+        name: net-shared
+        external: true
+
+services:
+    turnos_backoffice:
+        build:
+            context: ./backoffice
+            dockerfile: Dockerfile.production
+        image: registry.gitlab.com/sda.dev1/sda.dev/general/turnos-backoffice:${TAG}
+        container_name: turnos_backoffice
+        restart: always
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=net-shared"
+            - "traefik.http.routers.turnos_backoffice.rule=Host(`turnos.sda.ovh`)"
+            - "traefik.http.routers.turnos_backoffice.entrypoints=web"
+            - "traefik.http.services.turnos_backoffice.loadbalancer.server.port=3000"
+        env_file:
+            - ${APP_ENV_FILE:-../../.env.production}
+        environment:
+            - NODE_ENV=production
+        networks: [net-shared]

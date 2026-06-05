@@ -1,0 +1,96 @@
+# Compose principal del proyecto Turnos (single-tenant).
+# Requiere la red net-shared y la infraestructura ya levantadas:
+#   1) docker compose -f docker-compose.infra.yml up -d
+#   2) docker compose -f microservicios-turnos/docker-compose.yml up -d
+#   3) docker compose up -d   (este archivo)
+# O simplemente: make up
+services:
+    ###### BACKOFFICE (Panel de gestión de turnos) ######
+    turnos_backoffice:
+        build:
+            context: ./backoffice
+            dockerfile: Dockerfile.development
+        container_name: turnos_backoffice
+        restart: always
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=net-shared"
+            - "traefik.http.routers.turnos_backoffice.priority=10"
+            - "traefik.http.routers.turnos_backoffice.rule=Host(`turnos.localhost`) && PathPrefix(`/`)"
+            - "traefik.http.services.turnos_backoffice.loadbalancer.server.port=80"
+            - "traefik.http.middlewares.turnos_backoffice-sp.stripprefix.prefixes=/"
+        env_file: ./.env
+        environment:
+            NODE_ENV: development
+            TZ: America/Argentina/Buenos_Aires
+        volumes:
+            - ./backoffice:/usr/src/app
+            - /usr/src/app/node_modules
+        networks:
+            - net-shared
+
+    ##----------------------------------------------
+    ##        SERVICIOS CORE
+    ##----------------------------------------------
+
+    ###### AUTH (autenticación JWT) — interno, sin Traefik ######
+    turnos_auth:
+        build:
+            context: ./services/auth
+            dockerfile: Dockerfile.development
+        container_name: turnos_auth
+        restart: always
+        env_file: ./.env
+        environment:
+            - NODE_ENV=development
+            - TZ=America/Argentina/Buenos_Aires
+        volumes:
+            - ./services/auth:/app
+            - /app/node_modules
+        networks:
+            - net-shared
+
+    ###### MAILER (envío de emails SMTP) — interno, sin Traefik ######
+    turnos_mailer:
+        build:
+            context: ./services/mailer
+            dockerfile: Dockerfile.development
+        container_name: turnos_mailer
+        restart: always
+        env_file: ./.env
+        environment:
+            - NODE_ENV=development
+            - TZ=America/Argentina/Buenos_Aires
+        volumes:
+            - ./services/mailer:/app
+            - /app/node_modules
+        networks:
+            - net-shared
+
+    ###### STORAGE (archivos en MinIO/S3) — expuesto en /storage ######
+    turnos_storage:
+        build:
+            context: ./services/storage
+            dockerfile: Dockerfile.development
+        container_name: turnos_storage
+        restart: always
+        env_file: ./.env
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=net-shared"
+            - "traefik.http.routers.turnos_storage.priority=20"
+            - "traefik.http.routers.turnos_storage.rule=Host(`turnos.localhost`) && PathPrefix(`/storage`)"
+            - "traefik.http.services.turnos_storage.loadbalancer.server.port=80"
+            - "traefik.http.middlewares.turnos_storage-sp.stripprefix.prefixes=/storage"
+        environment:
+            - NODE_ENV=development
+            - TZ=America/Argentina/Buenos_Aires
+        volumes:
+            - ./services/storage:/app
+            - /app/node_modules
+        networks:
+            - net-shared
+
+networks:
+    net-shared:
+        external: true

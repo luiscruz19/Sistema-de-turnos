@@ -1,0 +1,24 @@
+FROM node:22-alpine AS deps
+WORKDIR /usr/src/app
+COPY ./pagos/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+FROM node:22-alpine AS runner
+RUN apk add --no-cache dumb-init
+WORKDIR /usr/src/app
+RUN chown -R node:node /usr/src/app
+USER node
+
+COPY --from=deps --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node ./pagos .
+COPY --chown=node:node ./shared/config ./config
+COPY --chown=node:node ./shared/db ./db
+COPY --chown=node:node ./shared/middlewares ./middlewares
+COPY --chown=node:node ./shared/models ./models
+COPY --chown=node:node ./shared/requests ./requests
+COPY --chown=node:node ./shared/utils ./utils
+
+ENV NODE_ENV=production
+EXPOSE 80
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "index.js"]

@@ -1,0 +1,107 @@
+services:
+    ###### AGENDA ######
+    turnos_ms_agenda:
+        build:
+            context: .
+            dockerfile: ./agenda/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-agenda:${TAG:-latest}
+        container_name: turnos_ms_agenda
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=agenda
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+    ###### CLINICA ######
+    turnos_ms_clinica:
+        build:
+            context: .
+            dockerfile: ./clinica/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-clinica:${TAG:-latest}
+        container_name: turnos_ms_clinica
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=clinica
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+    ###### INTEGRACIONES ######
+    turnos_ms_integraciones:
+        build:
+            context: .
+            dockerfile: ./integraciones/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-integraciones:${TAG:-latest}
+        container_name: turnos_ms_integraciones
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=integraciones
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+    ###### PAGOS ######
+    turnos_ms_pagos:
+        build:
+            context: .
+            dockerfile: ./pagos/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-pagos:${TAG:-latest}
+        container_name: turnos_ms_pagos
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=pagos
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+    ###### USUARIOS ######
+    turnos_ms_usuarios:
+        build:
+            context: .
+            dockerfile: ./usuarios/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-usuarios:${TAG:-latest}
+        container_name: turnos_ms_usuarios
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=usuarios
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+    ###### WIDGET ######
+    turnos_ms_widget:
+        build:
+            context: .
+            dockerfile: ./widget/Dockerfile.production
+        image: ${REGISTRY:-local}/turnos-ms-widget:${TAG:-latest}
+        container_name: turnos_ms_widget
+        restart: always
+        env_file:
+            - ${APP_ENV_FILE_MICROS:-../.env}
+        environment:
+            - NODE_ENV=production
+            - SERVICE_NAME=widget
+            - DB_NAME_CLIENTES=turnos
+            - TZ=America/Argentina/Buenos_Aires
+        networks:
+            - net-shared
+
+networks:
+    net-shared:
+        external: true
