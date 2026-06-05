@@ -1,0 +1,13 @@
+services:
+    traefik:
+        command:
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--providers.docker.network=turnos-verify"
+            - "--entrypoints.web.address=:80"
+            - "--api.dashboard=true"
+            - "--api.insecure=true"
+networks:
+    net-shared:
+        external: true
+        name: turnos-verify

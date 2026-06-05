@@ -7,7 +7,9 @@ import ClientContact from '../../models/ClientContact.js';
 import Schedule from '../../models/Schedule.js';
 import ScheduleException from '../../models/ScheduleException.js';
 import { Op } from 'sequelize';
+import sequelize from '../../db/sequelize.js';
 import { errorMessage, successMessage } from '../../utils/messages.js';
+import { isValidEmail, isValidPhone, normalizeStr } from '../../utils/helpers.js';
 import messages from '../../config/messages.js';
 
 /**
@@ -235,6 +237,25 @@ export async function createBooking(req, res) {
             }));
         }
 
+        // Se requiere al menos un dato de contacto
+        if (!client_email && !client_phone) {
+            return res.status(400).json(errorMessage({
+                message: messages.entities.appointment.errors.contactRequired
+            }));
+        }
+
+        // Validación de contacto: email válido y/o teléfono razonable
+        if (client_email && !isValidEmail(client_email)) {
+            return res.status(400).json(errorMessage({
+                message: messages.entities.appointment.errors.invalidEmail
+            }));
+        }
+        if (client_phone && !isValidPhone(client_phone)) {
+            return res.status(400).json(errorMessage({
+                message: messages.entities.appointment.errors.invalidPhone
+            }));
+        }
+
         // Obtener servicio
         const service = await Service.findOne({ where: { id: service_id, active: true } });
         if (!service) {
@@ -246,39 +267,6 @@ export async function createBooking(req, res) {
         const endMin = h * 60 + m + service.duration_minutes;
         const end_time = `${Math.floor(endMin / 60).toString().padStart(2, '0')}:${(endMin % 60).toString().padStart(2, '0')}:00`;
 
-        // Validar disponibilidad
-        const conflictWhere = {
-            date,
-            status: { [Op.notIn]: ['cancelled'] },
-            start_time: { [Op.lt]: end_time },
-            end_time: { [Op.gt]: start_time },
-        };
-        if (professional_id) conflictWhere.professional_id = professional_id;
-
-        const conflict = await Appointment.count({ where: conflictWhere });
-        if (conflict > 0) {
-            return res.status(409).json(errorMessage({
-                message: messages.entities.appointment.errors.conflictExists
-            }));
-        }
-
-        // Buscar o crear contacto
-        let contact = null;
-        if (client_email || client_phone) {
-            const contactWhere = {};
-            if (client_email) contactWhere.email = client_email;
-            else if (client_phone) contactWhere.phone = client_phone;
-
-            contact = await ClientContact.findOne({ where: contactWhere });
-            if (!contact) {
-                contact = await ClientContact.create({
-                    name: client_name,
-                    email: client_email || null,
-                    phone: client_phone || null,
-                });
-            }
-        }
-
         // Determinar depósito
         let depositAmount = 0;
         let depositStatus = 'none';
@@ -289,28 +277,90 @@ export async function createBooking(req, res) {
             depositStatus = depositAmount > 0 ? 'pending' : 'none';
         }
 
-        const appointment = await Appointment.create({
-            professional_id: professional_id || null,
-            service_id,
-            client_contact_id: contact?.id || null,
-            client_name,
-            client_email: client_email || null,
-            client_phone: client_phone || null,
-            date,
-            start_time,
-            end_time,
-            status: config.auto_confirm ? 'confirmed' : 'pending',
-            source: 'web',
-            deposit_status: depositStatus,
-            deposit_amount: depositAmount,
-            notes: notes || null,
-        });
+        // Verificación de disponibilidad + creación dentro de una transacción.
+        // El COUNT se hace con lock para evitar la condición de carrera (doble reserva)
+        // y respeta max_concurrent (canchas/clases con capacidad múltiple).
+        let appointment;
+        try {
+            appointment = await sequelize.transaction(async (t) => {
+                const conflictWhere = {
+                    date,
+                    status: { [Op.notIn]: ['cancelled'] },
+                    start_time: { [Op.lt]: end_time },
+                    end_time: { [Op.gt]: start_time },
+                };
+                if (professional_id) conflictWhere.professional_id = professional_id;
 
-        if (contact) {
-            await contact.update({
-                appointment_count: contact.appointment_count + 1,
-                last_appointment_at: new Date(),
+                const conflictCount = await Appointment.count({
+                    where: conflictWhere,
+                    transaction: t,
+                    lock: t.LOCK.UPDATE,
+                });
+                if (conflictCount >= (service.max_concurrent || 1)) {
+                    const conflictError = new Error('SLOT_CONFLICT');
+                    conflictError.code = 'SLOT_CONFLICT';
+                    throw conflictError;
+                }
+
+                // Buscar o crear contacto por email O phone (normalizado a lower/trim)
+                let contact = null;
+                const normEmail = normalizeStr(client_email);
+                const normPhone = client_phone ? client_phone.trim() : null;
+                if (normEmail || normPhone) {
+                    const orConditions = [];
+                    if (normEmail) {
+                        orConditions.push(sequelize.where(sequelize.fn('lower', sequelize.col('email')), normEmail));
+                    }
+                    if (normPhone) {
+                        orConditions.push({ phone: normPhone });
+                    }
+
+                    contact = await ClientContact.findOne({
+                        where: { [Op.or]: orConditions },
+                        transaction: t,
+                    });
+                    if (!contact) {
+                        contact = await ClientContact.create({
+                            name: client_name,
+                            email: client_email ? client_email.trim() : null,
+                            phone: normPhone,
+                        }, { transaction: t });
+                    }
+                }
+
+                const created = await Appointment.create({
+                    professional_id: professional_id || null,
+                    service_id,
+                    client_contact_id: contact?.id || null,
+                    client_name,
+                    client_email: client_email ? client_email.trim() : null,
+                    client_phone: normPhone,
+                    date,
+                    start_time,
+                    end_time,
+                    status: config.auto_confirm ? 'confirmed' : 'pending',
+                    source: 'web',
+                    deposit_status: depositStatus,
+                    deposit_amount: depositAmount,
+                    notes: notes || null,
+                }, { transaction: t });
+
+                if (contact) {
+                    await contact.update({
+                        appointment_count: contact.appointment_count + 1,
+                        last_appointment_at: new Date(),
+                    }, { transaction: t });
+                }
+
+                return created;
             });
+        } catch (txErr) {
+            if (txErr.code === 'SLOT_CONFLICT') {
+                return res.status(409).json(errorMessage({
+                    message: messages.entities.appointment.errors.conflictExists
+                }));
+            }
+            throw txErr;
         }
 
         return res.status(201).json(successMessage({

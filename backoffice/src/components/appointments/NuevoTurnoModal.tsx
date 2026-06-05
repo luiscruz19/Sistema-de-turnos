@@ -11,8 +11,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiHeaders } from '@/utils/api-headers';
 import { useToast } from '@/hooks/use-toast';
 import config from '@/config/config';
-import { Professional, Service, ProfessionalAvailability } from '@/types';
-import { Loader2 } from 'lucide-react';
+import { Professional, Service, ProfessionalAvailability, ClientContact } from '@/types';
+import { Loader2, Search, UserPlus, X } from 'lucide-react';
 
 interface Props {
     open: boolean;
@@ -40,7 +40,73 @@ export default function NuevoTurnoModal({ open, onClose, onCreated, professional
         notes: '',
     });
 
+    // Buscador de clientes existentes
+    const [clientSearch, setClientSearch] = useState('');
+    const [clientResults, setClientResults] = useState<ClientContact[]>([]);
+    const [searchingClients, setSearchingClients] = useState(false);
+    const [selectedClient, setSelectedClient] = useState<ClientContact | null>(null);
+    const [showResults, setShowResults] = useState(false);
+
     const selectedService = services.find(s => String(s.id) === form.service_id);
+
+    // Limpiar el buscador de clientes al cerrar el modal
+    useEffect(() => {
+        if (!open) {
+            setClientSearch('');
+            setClientResults([]);
+            setSelectedClient(null);
+            setShowResults(false);
+        }
+    }, [open]);
+
+    // Búsqueda de clientes con debounce
+    useEffect(() => {
+        if (selectedClient) return;
+        const term = clientSearch.trim();
+        if (term.length < 2) {
+            setClientResults([]);
+            return;
+        }
+        const handle = setTimeout(() => { searchClients(term); }, 300);
+        return () => clearTimeout(handle);
+    }, [clientSearch, selectedClient]);
+
+    const searchClients = async (term: string) => {
+        setSearchingClients(true);
+        try {
+            const params = new URLSearchParams({ search: term, limit: '8' });
+            const res = await fetch(`${config.basePath}/api/clients?${params}`, { headers: apiHeaders(token) });
+            const json = await res.json();
+            if (json.status === 1) {
+                setClientResults(json.data || []);
+                setShowResults(true);
+            }
+        } catch (err) {
+            console.error('Error buscando clientes', err);
+        } finally {
+            setSearchingClients(false);
+        }
+    };
+
+    const handleSelectClient = (client: ClientContact) => {
+        setSelectedClient(client);
+        setShowResults(false);
+        setClientResults([]);
+        setForm(f => ({
+            ...f,
+            client_name: client.name,
+            client_email: client.email || '',
+            client_phone: client.phone || '',
+        }));
+    };
+
+    const handleNewClient = () => {
+        setSelectedClient(null);
+        setShowResults(false);
+        setClientResults([]);
+        setClientSearch('');
+        setForm(f => ({ ...f, client_name: '', client_email: '', client_phone: '' }));
+    };
 
     useEffect(() => {
         if (form.service_id && form.date) {
@@ -195,6 +261,58 @@ export default function NuevoTurnoModal({ open, onClose, onCreated, professional
 
                     {/* Client data */}
                     <div className="border-t pt-4 space-y-3">
+                        {/* Buscador de clientes existentes */}
+                        {selectedClient ? (
+                            <div className="flex items-center justify-between rounded-md border border-primary/40 bg-primary/5 px-3 py-2">
+                                <div className="text-sm">
+                                    <span className="font-medium">{selectedClient.name}</span>
+                                    {(selectedClient.email || selectedClient.phone) && (
+                                        <span className="text-gray-500"> · {selectedClient.email || selectedClient.phone}</span>
+                                    )}
+                                </div>
+                                <button type="button" onClick={handleNewClient} className="text-gray-400 hover:text-gray-600" title="Quitar cliente">
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <Label>Buscar cliente existente</Label>
+                                <div className="relative">
+                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        className="pl-8"
+                                        value={clientSearch}
+                                        onChange={e => setClientSearch(e.target.value)}
+                                        onFocus={() => { if (clientResults.length > 0) setShowResults(true); }}
+                                        placeholder="Nombre, email o teléfono"
+                                    />
+                                    {searchingClients && (
+                                        <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                                    )}
+                                </div>
+                                {showResults && clientResults.length > 0 && (
+                                    <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg max-h-48 overflow-y-auto">
+                                        {clientResults.map(c => (
+                                            <button
+                                                key={c.id}
+                                                type="button"
+                                                onClick={() => handleSelectClient(c)}
+                                                className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-gray-50"
+                                            >
+                                                <span className="font-medium">{c.name}</span>
+                                                <span className="text-xs text-gray-500">{[c.email, c.phone].filter(Boolean).join(' · ') || 'Sin contacto'}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {showResults && clientSearch.trim().length >= 2 && !searchingClients && clientResults.length === 0 && (
+                                    <p className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+                                        <UserPlus className="h-3 w-3" /> Sin coincidencias. Completa los datos para crear uno nuevo.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
                         <div>
                             <Label>Nombre del cliente *</Label>
                             <Input value={form.client_name} onChange={e => setForm(f => ({ ...f, client_name: e.target.value }))} placeholder="Nombre completo" />

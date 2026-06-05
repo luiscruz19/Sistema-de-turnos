@@ -48,6 +48,9 @@ const messages = Object.freeze({
                 invalidDateRange: 'El rango de fechas es inválido.',
                 pastDate: 'No se puede reservar un turno en el pasado.',
                 advanceLimitExceeded: 'La fecha excede el límite de reserva anticipada.',
+                invalidEmail: 'El email ingresado no es válido.',
+                invalidPhone: 'El teléfono ingresado no es válido.',
+                contactRequired: 'Se requiere un email o un teléfono de contacto.',
             },
             success: {
                 list: 'Turnos obtenidos correctamente.',

@@ -51,6 +51,26 @@ export const isEmpty = (value) => {
     return (value === null || value === undefined || value === '' || value === 0);
 };
 
+// Valida formato de email (regex simple)
+export const isValidEmail = (value) => {
+    if (typeof value !== 'string') return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+};
+
+// Valida que un teléfono sea razonable (entre 6 y 20 dígitos)
+export const isValidPhone = (value) => {
+    if (typeof value !== 'string') return false;
+    const digits = value.replace(/\D/g, '');
+    return digits.length >= 6 && digits.length <= 20;
+};
+
+// Normaliza un string a lower/trim (para deduplicar contactos)
+export const normalizeStr = (value) => {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    return trimmed === '' ? null : trimmed.toLowerCase();
+};
+
 export function makeID(length, prefix = '') {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const charactersLength = characters.length;
