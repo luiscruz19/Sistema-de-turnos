@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiHeaders } from '@/utils/api-headers';
 import { useToast } from '@/hooks/use-toast';
 import config from '@/config/config';
-import { Professional, Service, AvailabilitySlot, ProfessionalAvailability } from '@/types';
+import { Professional, Service, ProfessionalAvailability } from '@/types';
 import { Loader2 } from 'lucide-react';
 
 interface Props {

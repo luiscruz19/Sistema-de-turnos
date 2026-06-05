@@ -1,6 +1,6 @@
 /**
  * Migración: tabla integrations (store single-tenant de credenciales de
- * integraciones externas). Reemplaza la antigua tenant_integrations.
+ * integraciones externas).
  * DB: turnos
  */
 

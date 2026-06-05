@@ -1,6 +1,6 @@
 /**
  * BFF público para el widget de reservas.
- * No requiere token de usuario — solo api_key.
+ * No requiere token de usuario, solo api_key.
  * Proxy hacia /widget/* del microservicio de turnos.
  */
 import { NextRequest, NextResponse } from 'next/server';

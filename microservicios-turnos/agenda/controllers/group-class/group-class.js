@@ -3,7 +3,7 @@ import GroupClassEnrollment from '../../models/GroupClassEnrollment.js';
 import ClientContact from '../../models/ClientContact.js';
 import Professional from '../../models/Professional.js';
 import Service from '../../models/Service.js';
-import { Op, fn, col, literal } from 'sequelize';
+import { Op } from 'sequelize';
 import { errorMessage, successMessage } from '../../utils/messages.js';
 import messages from '../../config/messages.js';
 

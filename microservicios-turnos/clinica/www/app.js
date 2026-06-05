@@ -22,7 +22,6 @@ app.use(bodyParser.json());
 app.use(Authorization);
 app.use(Debug);
 
-
 // Database connection
 sequelize.authenticate()
     .then(() => console.log('Conexion a base de datos establecida (Turnos - Clinica)'))

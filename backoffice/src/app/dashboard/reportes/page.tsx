@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarCheck, CheckCircle, XCircle, DollarSign, UserX, TrendingUp } from 'lucide-react';
+import { CalendarCheck, CheckCircle, DollarSign, UserX, TrendingUp } from 'lucide-react';
 import { AnalyticsData } from '@/types';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 
 export default function ReportesPage() {
     const { token } = useAuth();

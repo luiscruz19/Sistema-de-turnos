@@ -26,7 +26,6 @@ app.use(Debug);
 // OAuth callback publico de Google Calendar
 app.get('/system/oauth/google/callback', googleOAuthCallback);
 
-
 // Database connection
 sequelize.authenticate()
     .then(() => console.log('Conexion a base de datos establecida (Turnos - Agenda)'))
@@ -40,7 +39,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', service: 'turnos-agenda' });
 });
 
-// 404 Handler - debe ser el ultimo middleware
+// 404 Handler (ultimo middleware)
 app.use(notFound);
 
 export default app;

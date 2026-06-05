@@ -27,7 +27,6 @@ interface PaymentIntentSummary {
     mp_init_point: string | null;
 }
 
-
 const statusConfig: Record<AppointmentStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' }> = {
     pending: { label: 'Pendiente', variant: 'warning' },
     confirmed: { label: 'Confirmado', variant: 'default' },

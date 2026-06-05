@@ -23,9 +23,8 @@ app.use(bodyParser.json());
 app.use(Authorization);
 app.use(Debug);
 
-// OAuth callback de Google Calendar —
+// OAuth callback publico de Google Calendar
 app.get('/system/oauth/google/callback', googleOAuthCallback);
-
 
 // Database connection
 sequelize.authenticate()

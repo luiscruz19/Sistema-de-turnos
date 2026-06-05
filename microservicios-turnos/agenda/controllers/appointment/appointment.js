@@ -165,7 +165,7 @@ export async function getById(req, res) {
 }
 
 /**
- * Crear turno — valida disponibilidad, crea/vincula client_contact
+ * Crear turno: valida disponibilidad, crea/vincula client_contact
  */
 export async function create(req, res) {
     try {

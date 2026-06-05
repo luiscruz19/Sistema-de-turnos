@@ -7,9 +7,8 @@ import BusinessConfig from '../../models/BusinessConfig.js';
 import Schedule from '../../models/Schedule.js';
 import ScheduleException from '../../models/ScheduleException.js';
 import { Op } from 'sequelize';
-import { errorMessage, successMessage } from '../../utils/messages.js';
+import { successMessage } from '../../utils/messages.js';
 import messages from '../../config/messages.js';
-import CONFIG from '../../config/config.js';
 import connection from '../../utils/connection.js';
 import { parseIntent, generateConversationalResponse } from '../../integrations/openai.js';
 

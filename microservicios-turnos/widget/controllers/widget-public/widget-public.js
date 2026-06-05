@@ -33,7 +33,7 @@ function minutesToTime(minutes) {
 }
 
 /**
- * GET /widget/config — devuelve business_config + services activos + professionals
+ * GET /widget/config: devuelve business_config + services activos + professionals
  */
 export async function getConfig(req, res) {
     try {
@@ -92,7 +92,7 @@ export async function getConfig(req, res) {
 }
 
 /**
- * GET /widget/availability — slots disponibles para fecha/servicio/profesional
+ * GET /widget/availability: slots disponibles para fecha/servicio/profesional
  */
 export async function getAvailability(req, res) {
     try {
@@ -214,7 +214,7 @@ export async function getAvailability(req, res) {
 }
 
 /**
- * POST /widget/book — crear turno desde el widget
+ * POST /widget/book: crear turno desde el widget
  */
 export async function createBooking(req, res) {
     try {

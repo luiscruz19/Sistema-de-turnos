@@ -23,10 +23,9 @@ app.use(bodyParser.json());
 app.use(Authorization);
 app.use(Debug);
 
-// Webhook publico de MercadoPago (identificado por external_reference) —
+// Webhook publico de MercadoPago (identificado por external_reference)
 app.post('/system/webhook/mercadopago', mpWebhook);
 app.get('/system/webhook/mercadopago', mpWebhook);
-
 
 // Database connection
 sequelize.authenticate()

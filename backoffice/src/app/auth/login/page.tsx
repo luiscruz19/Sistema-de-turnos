@@ -42,7 +42,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex">
-            {/* Panel izquierdo oscuro — desktop */}
+            {/* Panel izquierdo oscuro (desktop) */}
             <div className="hidden lg:flex lg:w-5/12 xl:w-2/5 bg-slate-900 flex-col items-center justify-center p-12">
                 <img
                     src="/images/logo-light-removebg-preview.png"
@@ -60,7 +60,7 @@ export default function LoginPage() {
                 </div>
             </div>
 
-            {/* Panel derecho — formulario */}
+            {/* Panel derecho (formulario) */}
             <div className="flex-1 flex flex-col bg-white">
                 <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
                     {/* Logo mobile */}

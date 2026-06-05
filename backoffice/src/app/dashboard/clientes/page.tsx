@@ -6,15 +6,15 @@ import { apiHeaders } from '@/utils/api-headers';
 import config from '@/config/config';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Search, Eye, Pencil, ChevronLeft, ChevronRight, Loader2, UserX, Calendar, HeartPulse } from 'lucide-react';
+import { Search, Eye, Pencil, ChevronLeft, ChevronRight, Loader2, Calendar, HeartPulse } from 'lucide-react';
 import Link from 'next/link';
-import { ClientContact, Appointment, Pagination, AppointmentStatus } from '@/types';
+import { ClientContact, Pagination, AppointmentStatus } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 const statusConfig: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {

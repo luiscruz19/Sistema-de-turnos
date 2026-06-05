@@ -23,11 +23,10 @@ app.use(bodyParser.json());
 app.use(Authorization);
 app.use(Debug);
 
-// Endpoints de sistema — deben ir
+// Endpoints de sistema (sin prefijo de rol)
 app.get('/system/administrators/by-user/:user_id', listByUser);
 app.get('/system/administrators/get-by-user-id/:user_id', searchByUserId);
 app.post('/system/administrators/provision', provision);
-
 
 // Database connection
 sequelize.authenticate()
@@ -42,7 +41,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', service: 'turnos-usuarios' });
 });
 
-// 404 Handler - debe ser el ultimo middleware
+// 404 Handler (ultimo middleware)
 app.use(notFound);
 
 export default app;
