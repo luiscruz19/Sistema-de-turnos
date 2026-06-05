@@ -50,23 +50,6 @@ services:
     networks:
       - net-shared
 
-  ###### MAILER (envío de emails SMTP) — interno, sin Traefik ######
-  turnos_mailer:
-    build:
-      context: ./services/mailer
-      dockerfile: Dockerfile.development
-    container_name: turnos_mailer
-    restart: always
-    env_file: ./.env
-    environment:
-      - NODE_ENV=development
-      - TZ=America/Argentina/Buenos_Aires
-    volumes:
-      - ./services/mailer:/app
-      - /app/node_modules
-    networks:
-      - net-shared
-
   ###### STORAGE (archivos en MinIO/S3) — expuesto en /storage ######
   turnos_storage:
     build:
