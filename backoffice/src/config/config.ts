@@ -6,9 +6,6 @@ const config = {
     },
     AUTH_API_URL: process.env.AUTH_API_URL,
     MICROSERVICES_URL: {
-        CONFIGURACION: process.env.CONFIGURACION_API_URL,
-        PAYWAY: process.env.PAYWAY_API_URL,
-        // Microservicios de turnos por dominio
         USUARIOS: process.env.TURNOS_MS_USUARIOS_URL || 'http://turnos_ms_usuarios',
         AGENDA: process.env.TURNOS_MS_AGENDA_URL || 'http://turnos_ms_agenda',
         PAGOS: process.env.TURNOS_MS_PAGOS_URL || 'http://turnos_ms_pagos',
