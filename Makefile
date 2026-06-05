@@ -28,9 +28,9 @@ logs:
 ps:
 	docker compose -f $(INFRA) -f $(MICROS) -f docker-compose.yml ps
 
-## Ejecuta las migraciones de base de datos
+## Ejecuta las migraciones de base de datos (dentro de un contenedor, donde shared/db está montado)
 migrate:
-	node microservicios-turnos/shared/db/migrations/runner.js
+	docker compose -f $(MICROS) exec turnos_ms_agenda node db/migrations/runner.js
 
 ## Carga datos de ejemplo (placeholder — completar según necesidad)
 seed:
