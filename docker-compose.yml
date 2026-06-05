@@ -4,6 +4,8 @@
 #   2) docker compose -f microservicios-turnos/docker-compose.yml up -d
 #   3) docker compose up -d   (este archivo)
 # O simplemente: make up
+name: turnos-app
+
 services:
   ###### BACKOFFICE (Panel de gestión de turnos) ######
   turnos_backoffice:
