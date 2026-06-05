@@ -1,149 +1,149 @@
 services:
-    ###### AGENDA ######
-    turnos_ms_agenda:
-        build:
-            context: ./agenda
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_agenda
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=agenda
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./agenda:/usr/src/turnos-agenda
-            - ./shared/config:/usr/src/turnos-agenda/config
-            - ./shared/db:/usr/src/turnos-agenda/db
-            - ./shared/middlewares:/usr/src/turnos-agenda/middlewares
-            - ./shared/models:/usr/src/turnos-agenda/models
-            - ./shared/requests:/usr/src/turnos-agenda/requests
-            - ./shared/utils:/usr/src/turnos-agenda/utils
-            - /usr/src/turnos-agenda/node_modules
-        networks:
-            - net-shared
-    ###### CLINICA ######
-    turnos_ms_clinica:
-        build:
-            context: ./clinica
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_clinica
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=clinica
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./clinica:/usr/src/turnos-clinica
-            - ./shared/config:/usr/src/turnos-clinica/config
-            - ./shared/db:/usr/src/turnos-clinica/db
-            - ./shared/middlewares:/usr/src/turnos-clinica/middlewares
-            - ./shared/models:/usr/src/turnos-clinica/models
-            - ./shared/requests:/usr/src/turnos-clinica/requests
-            - ./shared/utils:/usr/src/turnos-clinica/utils
-            - /usr/src/turnos-clinica/node_modules
-        networks:
-            - net-shared
-    ###### INTEGRACIONES ######
-    turnos_ms_integraciones:
-        build:
-            context: ./integraciones
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_integraciones
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=integraciones
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./integraciones:/usr/src/turnos-integraciones
-            - ./shared/config:/usr/src/turnos-integraciones/config
-            - ./shared/db:/usr/src/turnos-integraciones/db
-            - ./shared/middlewares:/usr/src/turnos-integraciones/middlewares
-            - ./shared/models:/usr/src/turnos-integraciones/models
-            - ./shared/requests:/usr/src/turnos-integraciones/requests
-            - ./shared/utils:/usr/src/turnos-integraciones/utils
-            - /usr/src/turnos-integraciones/node_modules
-        networks:
-            - net-shared
-    ###### PAGOS ######
-    turnos_ms_pagos:
-        build:
-            context: ./pagos
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_pagos
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=pagos
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./pagos:/usr/src/turnos-pagos
-            - ./shared/config:/usr/src/turnos-pagos/config
-            - ./shared/db:/usr/src/turnos-pagos/db
-            - ./shared/middlewares:/usr/src/turnos-pagos/middlewares
-            - ./shared/models:/usr/src/turnos-pagos/models
-            - ./shared/requests:/usr/src/turnos-pagos/requests
-            - ./shared/utils:/usr/src/turnos-pagos/utils
-            - /usr/src/turnos-pagos/node_modules
-        networks:
-            - net-shared
-    ###### USUARIOS ######
-    turnos_ms_usuarios:
-        build:
-            context: ./usuarios
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_usuarios
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=usuarios
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./usuarios:/usr/src/turnos-usuarios
-            - ./shared/config:/usr/src/turnos-usuarios/config
-            - ./shared/db:/usr/src/turnos-usuarios/db
-            - ./shared/middlewares:/usr/src/turnos-usuarios/middlewares
-            - ./shared/models:/usr/src/turnos-usuarios/models
-            - ./shared/requests:/usr/src/turnos-usuarios/requests
-            - ./shared/utils:/usr/src/turnos-usuarios/utils
-            - /usr/src/turnos-usuarios/node_modules
-        networks:
-            - net-shared
-    ###### WIDGET ######
-    turnos_ms_widget:
-        build:
-            context: ./widget
-            dockerfile: Dockerfile.development
-        container_name: turnos_ms_widget
-        restart: always
-        env_file:
-            - ../.env
-        environment:
-            - SERVICE_NAME=widget
-            - DB_NAME_CLIENTES=turnos
-            - TZ=America/Argentina/Buenos_Aires
-        volumes:
-            - ./widget:/usr/src/turnos-widget
-            - ./shared/config:/usr/src/turnos-widget/config
-            - ./shared/db:/usr/src/turnos-widget/db
-            - ./shared/middlewares:/usr/src/turnos-widget/middlewares
-            - ./shared/models:/usr/src/turnos-widget/models
-            - ./shared/requests:/usr/src/turnos-widget/requests
-            - ./shared/utils:/usr/src/turnos-widget/utils
-            - /usr/src/turnos-widget/node_modules
-        networks:
-            - net-shared
+  ###### AGENDA ######
+  turnos_ms_agenda:
+    build:
+      context: ./agenda
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_agenda
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=agenda
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./agenda:/usr/src/turnos-agenda
+      - ./shared/config:/usr/src/turnos-agenda/config
+      - ./shared/db:/usr/src/turnos-agenda/db
+      - ./shared/middlewares:/usr/src/turnos-agenda/middlewares
+      - ./shared/models:/usr/src/turnos-agenda/models
+      - ./shared/requests:/usr/src/turnos-agenda/requests
+      - ./shared/utils:/usr/src/turnos-agenda/utils
+      - /usr/src/turnos-agenda/node_modules
+    networks:
+      - net-shared
+  ###### CLINICA ######
+  turnos_ms_clinica:
+    build:
+      context: ./clinica
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_clinica
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=clinica
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./clinica:/usr/src/turnos-clinica
+      - ./shared/config:/usr/src/turnos-clinica/config
+      - ./shared/db:/usr/src/turnos-clinica/db
+      - ./shared/middlewares:/usr/src/turnos-clinica/middlewares
+      - ./shared/models:/usr/src/turnos-clinica/models
+      - ./shared/requests:/usr/src/turnos-clinica/requests
+      - ./shared/utils:/usr/src/turnos-clinica/utils
+      - /usr/src/turnos-clinica/node_modules
+    networks:
+      - net-shared
+  ###### INTEGRACIONES ######
+  turnos_ms_integraciones:
+    build:
+      context: ./integraciones
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_integraciones
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=integraciones
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./integraciones:/usr/src/turnos-integraciones
+      - ./shared/config:/usr/src/turnos-integraciones/config
+      - ./shared/db:/usr/src/turnos-integraciones/db
+      - ./shared/middlewares:/usr/src/turnos-integraciones/middlewares
+      - ./shared/models:/usr/src/turnos-integraciones/models
+      - ./shared/requests:/usr/src/turnos-integraciones/requests
+      - ./shared/utils:/usr/src/turnos-integraciones/utils
+      - /usr/src/turnos-integraciones/node_modules
+    networks:
+      - net-shared
+  ###### PAGOS ######
+  turnos_ms_pagos:
+    build:
+      context: ./pagos
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_pagos
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=pagos
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./pagos:/usr/src/turnos-pagos
+      - ./shared/config:/usr/src/turnos-pagos/config
+      - ./shared/db:/usr/src/turnos-pagos/db
+      - ./shared/middlewares:/usr/src/turnos-pagos/middlewares
+      - ./shared/models:/usr/src/turnos-pagos/models
+      - ./shared/requests:/usr/src/turnos-pagos/requests
+      - ./shared/utils:/usr/src/turnos-pagos/utils
+      - /usr/src/turnos-pagos/node_modules
+    networks:
+      - net-shared
+  ###### USUARIOS ######
+  turnos_ms_usuarios:
+    build:
+      context: ./usuarios
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_usuarios
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=usuarios
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./usuarios:/usr/src/turnos-usuarios
+      - ./shared/config:/usr/src/turnos-usuarios/config
+      - ./shared/db:/usr/src/turnos-usuarios/db
+      - ./shared/middlewares:/usr/src/turnos-usuarios/middlewares
+      - ./shared/models:/usr/src/turnos-usuarios/models
+      - ./shared/requests:/usr/src/turnos-usuarios/requests
+      - ./shared/utils:/usr/src/turnos-usuarios/utils
+      - /usr/src/turnos-usuarios/node_modules
+    networks:
+      - net-shared
+  ###### WIDGET ######
+  turnos_ms_widget:
+    build:
+      context: ./widget
+      dockerfile: Dockerfile.development
+    container_name: turnos_ms_widget
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=widget
+      - DB_NAME_CLIENTES=turnos
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./widget:/usr/src/turnos-widget
+      - ./shared/config:/usr/src/turnos-widget/config
+      - ./shared/db:/usr/src/turnos-widget/db
+      - ./shared/middlewares:/usr/src/turnos-widget/middlewares
+      - ./shared/models:/usr/src/turnos-widget/models
+      - ./shared/requests:/usr/src/turnos-widget/requests
+      - ./shared/utils:/usr/src/turnos-widget/utils
+      - /usr/src/turnos-widget/node_modules
+    networks:
+      - net-shared
 
 networks:
-    net-shared:
-        external: true
+  net-shared:
+    external: true
