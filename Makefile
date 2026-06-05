@@ -32,6 +32,7 @@ ps:
 migrate:
 	docker compose -f $(MICROS) exec turnos_ms_agenda node db/migrations/runner.js
 
-## Carga datos de ejemplo (placeholder — completar según necesidad)
+## Carga el admin de auth y los datos demo de negocio
 seed:
-	@echo "Seed aún no implementado."
+	docker compose exec -T turnos_auth npm run create-admin
+	docker compose -f $(MICROS) exec -T turnos_ms_agenda node db/seed.js
