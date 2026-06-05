@@ -13,7 +13,7 @@ async function addColumnIfMissing(queryInterface, table, column, spec) {
 }
 
 export async function up(queryInterface, Sequelize) {
-    // ── 1. payment_intents ─────────────────────────────────────────────
+    // 1. payment_intents
     await queryInterface.createTable('payment_intents', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         appointment_id: { type: Sequelize.INTEGER, allowNull: true },
@@ -41,7 +41,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('payment_intents', ['mp_preference_id']);
     await queryInterface.addIndex('payment_intents', ['mp_external_reference']);
 
-    // ── 3. payment_transactions ────────────────────────────────────────
+    // 3. payment_transactions
     await queryInterface.createTable('payment_transactions', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         payment_intent_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -58,7 +58,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('payment_transactions', ['payment_intent_id']);
     await queryInterface.addIndex('payment_transactions', ['mp_payment_id']);
 
-    // ── 4. client_records ──────────────────────────────────────────────
+    // 4. client_records
     await queryInterface.createTable('client_records', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         client_contact_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -73,7 +73,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('client_records', ['client_contact_id'], { unique: true });
 
-    // ── 5. client_notes ────────────────────────────────────────────────
+    // 5. client_notes
     await queryInterface.createTable('client_notes', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         client_contact_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -89,7 +89,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('client_notes', ['professional_id']);
     await queryInterface.addIndex('client_notes', ['appointment_id']);
 
-    // ── 6. client_attachments ──────────────────────────────────────────
+    // 6. client_attachments
     await queryInterface.createTable('client_attachments', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         client_contact_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -104,7 +104,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('client_attachments', ['client_contact_id']);
 
-    // ── 7. professional_calendar_sync ──────────────────────────────────
+    // 7. professional_calendar_sync
     await queryInterface.createTable('professional_calendar_sync', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         professional_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -121,7 +121,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('professional_calendar_sync', ['professional_id'], { unique: true });
 
-    // ── 8. business_configs: nuevas columnas ───────────────────────────
+    // 8. business_configs: nuevas columnas
     await addColumnIfMissing(queryInterface, 'business_configs', 'require_payment', {
         type: Sequelize.BOOLEAN,
         allowNull: false,
@@ -137,7 +137,7 @@ export async function up(queryInterface, Sequelize) {
         defaultValue: false,
     });
 
-    // ── 9. appointments: link a payment_intent actual ──────────────────
+    // 9. appointments: link a payment_intent actual
     await addColumnIfMissing(queryInterface, 'appointments', 'current_payment_intent_id', {
         type: Sequelize.INTEGER,
         allowNull: true,

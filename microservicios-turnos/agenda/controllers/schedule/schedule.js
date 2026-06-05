@@ -127,7 +127,7 @@ export async function remove(req, res) {
     }
 }
 
-// ── Excepciones ──
+// Excepciones
 
 /**
  * Listar excepciones de horario

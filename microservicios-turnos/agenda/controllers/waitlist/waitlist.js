@@ -134,7 +134,7 @@ export async function del(req, res) {
 }
 
 /**
- * Marcar entrada como notificada (estado → notificado, notificado_at = now)
+ * Marcar entrada como notificada (estado  notificado, notificado_at = now)
  */
 export async function notify(req, res) {
     try {

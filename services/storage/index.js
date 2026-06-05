@@ -15,12 +15,9 @@ process.on('uncaughtException', (err) => {
 });
 
 const server = app.listen(PORT, () => {
-    logger.info('');
-    logger.info('-'.repeat(80));
     logger.info(`Storage service running on port ${PORT}`);
     logger.info(`Route prefix: ${CONFIG.APP.INITIAL_ROUTE}`);
     logger.info(`Environment: ${CONFIG.APP.NODE_ENV}`);
-    logger.info('-'.repeat(80));
 });
 
 const shutdown = () => {

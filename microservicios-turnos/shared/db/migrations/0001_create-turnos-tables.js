@@ -5,7 +5,7 @@
 
 export async function up(queryInterface, Sequelize) {
 
-    // ── business_configs: configuración del negocio ──
+    // business_configs: configuración del negocio
     await queryInterface.createTable('business_configs', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: Sequelize.STRING, allowNull: false },
@@ -25,7 +25,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('business_configs', ['api_key'], { unique: true });
 
-    // ── professionals: profesionales que atienden ──
+    // professionals: profesionales que atienden
     await queryInterface.createTable('professionals', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: Sequelize.STRING, allowNull: false },
@@ -41,7 +41,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('professionals', ['active']);
 
-    // ── services: servicios ofrecidos ──
+    // services: servicios ofrecidos
     await queryInterface.createTable('services', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: Sequelize.STRING, allowNull: false },
@@ -60,7 +60,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('services', ['active']);
     await queryInterface.addIndex('services', ['category']);
 
-    // ── professional_services: pivot profesional-servicio ──
+    // professional_services: pivot profesional-servicio
     await queryInterface.createTable('professional_services', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         professional_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'professionals', key: 'id' }, onDelete: 'CASCADE' },
@@ -70,7 +70,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('professional_services', ['professional_id', 'service_id'], { unique: true });
 
-    // ── schedules: horarios de atención ──
+    // schedules: horarios de atención
     await queryInterface.createTable('schedules', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         professional_id: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'professionals', key: 'id' }, onDelete: 'CASCADE', comment: 'null = horario del negocio' },
@@ -84,7 +84,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('schedules', ['professional_id']);
     await queryInterface.addIndex('schedules', ['day_of_week']);
 
-    // ── schedule_exceptions: excepciones de horario ──
+    // schedule_exceptions: excepciones de horario
     await queryInterface.createTable('schedule_exceptions', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         professional_id: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'professionals', key: 'id' }, onDelete: 'CASCADE' },
@@ -99,7 +99,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('schedule_exceptions', ['professional_id', 'date']);
     await queryInterface.addIndex('schedule_exceptions', ['date']);
 
-    // ── client_contacts: contactos/pacientes del negocio ──
+    // client_contacts: contactos/pacientes del negocio
     await queryInterface.createTable('client_contacts', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: Sequelize.STRING, allowNull: false },
@@ -115,7 +115,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('client_contacts', ['email']);
     await queryInterface.addIndex('client_contacts', ['phone']);
 
-    // ── appointments: turnos ──
+    // appointments: turnos
     await queryInterface.createTable('appointments', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         professional_id: { type: Sequelize.INTEGER, allowNull: true, references: { model: 'professionals', key: 'id' }, onDelete: 'SET NULL' },
@@ -147,7 +147,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('appointments', ['client_contact_id']);
     await queryInterface.addIndex('appointments', ['date', 'start_time']);
 
-    // ── appointment_reminders: recordatorios enviados ──
+    // appointment_reminders: recordatorios enviados
     await queryInterface.createTable('appointment_reminders', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         appointment_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'appointments', key: 'id' }, onDelete: 'CASCADE' },
@@ -159,7 +159,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('appointment_reminders', ['appointment_id']);
 
-    // ── whatsapp_sessions: sesiones de WhatsApp para el asistente IA ──
+    // whatsapp_sessions: sesiones de WhatsApp para el asistente IA
     await queryInterface.createTable('whatsapp_sessions', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         phone_number: { type: Sequelize.STRING, allowNull: false },
@@ -171,7 +171,7 @@ export async function up(queryInterface, Sequelize) {
     });
     await queryInterface.addIndex('whatsapp_sessions', ['phone_number'], { unique: true });
 
-    // ── analytics_daily: métricas diarias precalculadas ──
+    // analytics_daily: métricas diarias precalculadas
     await queryInterface.createTable('analytics_daily', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         date: { type: Sequelize.DATEONLY, allowNull: false },

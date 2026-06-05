@@ -5,7 +5,7 @@
 
 export async function up(queryInterface, Sequelize) {
 
-    // ── intake_forms: formularios de intake pre-turno ──
+    // intake_forms: formularios de intake pre-turno
     await queryInterface.createTable('intake_forms', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         service_id: { type: Sequelize.INTEGER, allowNull: true, comment: 'null = aplica a todos los servicios' },
@@ -19,7 +19,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('intake_forms', ['service_id']);
     console.info('    ~ Tabla intake_forms creada');
 
-    // ── intake_fields: campos del formulario de intake ──
+    // intake_fields: campos del formulario de intake
     await queryInterface.createTable('intake_fields', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         intake_form_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'intake_forms', key: 'id' }, onDelete: 'CASCADE' },
@@ -34,7 +34,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('intake_fields', ['intake_form_id']);
     console.info('    ~ Tabla intake_fields creada');
 
-    // ── intake_responses: respuestas del cliente a un intake ──
+    // intake_responses: respuestas del cliente a un intake
     await queryInterface.createTable('intake_responses', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         appointment_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'appointments', key: 'id' }, onDelete: 'CASCADE' },
@@ -48,7 +48,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('intake_responses', ['intake_form_id']);
     console.info('    ~ Tabla intake_responses creada');
 
-    // ── session_packages: paquetes de sesiones disponibles ──
+    // session_packages: paquetes de sesiones disponibles
     await queryInterface.createTable('session_packages', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         nombre: { type: Sequelize.STRING(300), allowNull: false },
@@ -65,7 +65,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('session_packages', ['service_id']);
     console.info('    ~ Tabla session_packages creada');
 
-    // ── client_packages: paquetes comprados por clientes ──
+    // client_packages: paquetes comprados por clientes
     await queryInterface.createTable('client_packages', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         client_contact_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'client_contacts', key: 'id' }, onDelete: 'RESTRICT' },
@@ -84,7 +84,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('client_packages', ['session_package_id']);
     console.info('    ~ Tabla client_packages creada');
 
-    // ── waitlist_entries: lista de espera para turnos ──
+    // waitlist_entries: lista de espera para turnos
     await queryInterface.createTable('waitlist_entries', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         client_contact_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'client_contacts', key: 'id' }, onDelete: 'CASCADE' },
@@ -103,7 +103,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('waitlist_entries', ['estado']);
     console.info('    ~ Tabla waitlist_entries creada');
 
-    // ── group_classes: clases grupales ──
+    // group_classes: clases grupales
     await queryInterface.createTable('group_classes', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         service_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'services', key: 'id' }, onDelete: 'RESTRICT' },
@@ -124,7 +124,7 @@ export async function up(queryInterface, Sequelize) {
     await queryInterface.addIndex('group_classes', ['fecha_hora']);
     console.info('    ~ Tabla group_classes creada');
 
-    // ── group_class_enrollments: inscripciones a clases grupales ──
+    // group_class_enrollments: inscripciones a clases grupales
     await queryInterface.createTable('group_class_enrollments', {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         group_class_id: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'group_classes', key: 'id' }, onDelete: 'CASCADE' },

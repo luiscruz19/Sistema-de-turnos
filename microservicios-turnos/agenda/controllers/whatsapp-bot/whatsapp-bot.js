@@ -261,7 +261,7 @@ export async function handleIncoming(req, res) {
 
                     const slot = data.slots[num - 1];
 
-                    reply = `Resumen de tu turno:\n\n📋 ${data.service_name}\n📅 ${data.date}\n🕐 ${slot.start}\n\n¿Confirmás? (respondé "sí" o "no")`;
+                    reply = `Resumen de tu turno:\n\n ${data.service_name}\n ${data.date}\n ${slot.start}\n\n¿Confirmás? (respondé "sí" o "no")`;
 
                     await session.update({
                         conversation_state: 'confirming',
@@ -309,7 +309,7 @@ export async function handleIncoming(req, res) {
                         });
 
                         const statusText = appointment.status === 'confirmed' ? 'confirmado' : 'pendiente de confirmación';
-                        reply = `Tu turno fue creado (${statusText}):\n\n📋 ${data.service_name}\n📅 ${data.date}\n🕐 ${data.start_time}\n\nPara cancelar, escribí "cancelar".`;
+                        reply = `Tu turno fue creado (${statusText}):\n\n ${data.service_name}\n ${data.date}\n ${data.start_time}\n\nPara cancelar, escribí "cancelar".`;
                     } catch (err) {
                         console.error('Error creating appointment from WhatsApp:', err);
                         reply = 'Hubo un error al crear tu turno. Por favor, intentá de nuevo.';

@@ -57,10 +57,7 @@ export default (req, res, next) => {
     const authorization = headers.authorization ? 'Presente (Basic/Bearer)' : 'No presente';
     const fullUrl = `${protocol}://${hostname}${originalUrl}`;
 
-    console.info('');
-    console.info('='.repeat(100));
     console.info('PETICION ENTRANTE - ' + horaFormateada);
-    console.info('='.repeat(100));
     console.info('\nINFORMACION GENERAL:');
     console.info('   Método HTTP:', method);
     console.info('   URL Completa:', fullUrl);
@@ -115,7 +112,6 @@ export default (req, res, next) => {
     } else {
         console.info('   (Ninguno)');
     }
-    console.info('\n' + '─'.repeat(100));
 
     // Intercept response
     const originalSend = res.send.bind(res);
@@ -129,9 +125,7 @@ export default (req, res, next) => {
             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
         });
 
-        console.info('\n' + '='.repeat(100));
         console.info('RESPUESTA ENVIADA - ' + horaResp);
-        console.info('='.repeat(100));
         console.info('\nINFORMACION DE RESPUESTA:');
         console.info('   Status Code:', res.statusCode);
         console.info('   Status Message:', res.statusMessage || getStatusMessage(res.statusCode));
@@ -160,9 +154,7 @@ export default (req, res, next) => {
             console.info('   (Error al parsear respuesta)');
         }
 
-        console.info('\n' + '='.repeat(100));
         console.info('PETICION COMPLETADA - Duración total: ' + (Date.now() - startTime) + 'ms');
-        console.info('='.repeat(100) + '\n');
     };
 
     res.send = function (data) {
