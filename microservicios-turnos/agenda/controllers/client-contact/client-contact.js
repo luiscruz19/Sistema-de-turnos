@@ -13,10 +13,14 @@ import messages from '../../config/messages.js';
  */
 export async function list(req, res) {
     try {
-        const { page = 1, limit = 20, search } = req.query;
+        const { page = 1, limit = 20, search, active } = req.query;
         const offset = (Number(page) - 1) * Number(limit);
 
         const where = {};
+
+        // Por defecto se ocultan los clientes dados de baja. active=false o all para verlos.
+        if (active === undefined) where.active = true;
+        else if (active !== 'all') where.active = active === 'true';
 
         if (search) {
             where[Op.or] = [
@@ -175,7 +179,8 @@ export async function remove(req, res) {
             }));
         }
 
-        await contact.destroy();
+        // Soft-delete: se desactiva para preservar el historial de turnos.
+        await contact.update({ active: false });
 
         return res.status(200).json(successMessage({
             message: messages.entities.clientContact.success.deleted,

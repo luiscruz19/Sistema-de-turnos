@@ -42,6 +42,12 @@ const ClientContact = sequelize.define('client_contacts', {
         allowNull: false,
         defaultValue: 0,
     },
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        comment: 'Soft-delete: false = cliente dado de baja (oculto en listados)',
+    },
 }, {
     tableName: 'client_contacts',
     timestamps: true,

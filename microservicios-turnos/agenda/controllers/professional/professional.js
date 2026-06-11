@@ -15,9 +15,8 @@ export async function list(req, res) {
 
         const where = {};
 
-        if (active !== undefined) {
-            where.active = active === 'true';
-        }
+        if (active === undefined) where.active = true;
+        else if (active !== 'all') where.active = active === 'true';
 
         if (search) {
             where[Op.or] = [
@@ -200,7 +199,8 @@ export async function remove(req, res) {
             }));
         }
 
-        await professional.destroy();
+        // Soft-delete: se desactiva para preservar horarios y turnos asociados.
+        await professional.update({ active: false });
 
         return res.status(200).json(successMessage({
             message: messages.entities.professional.success.deleted,

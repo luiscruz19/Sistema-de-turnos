@@ -46,3 +46,24 @@ export async function PUT(
         return NextResponse.json({ status: 0, message: 'Error al actualizar cliente' }, { status: 500 });
     }
 }
+
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+    try {
+        const h = getRequestHeaders(request);
+        if (!h.token) return NextResponse.json(not_auth, { status: 401 });
+
+        const response = await serviceRequest({
+            method: 'DELETE',
+            path: `/client-contacts/admins/${id}`,
+            token: h.token,
+        });
+        return NextResponse.json(response, { status: response.status > 0 ? 200 : 400 });
+    } catch (error) {
+        console.error('client DELETE', { error });
+        return NextResponse.json({ status: 0, message: 'Error al eliminar cliente' }, { status: 500 });
+    }
+}

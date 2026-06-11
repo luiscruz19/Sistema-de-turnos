@@ -15,9 +15,9 @@ export async function list(req, res) {
 
         const where = {};
 
-        if (active !== undefined) {
-            where.active = active === 'true';
-        }
+        // Por defecto se ocultan los inactivos (dados de baja). active=false o all para verlos.
+        if (active === undefined) where.active = true;
+        else if (active !== 'all') where.active = active === 'true';
 
         if (category) {
             where.category = category;
@@ -177,7 +177,9 @@ export async function remove(req, res) {
             }));
         }
 
-        await service.destroy();
+        // Soft-delete: se desactiva para preservar el historial (turnos,
+        // paquetes y clases asociadas). Los listados ocultan los inactivos.
+        await service.update({ active: false });
 
         return res.status(200).json(successMessage({
             message: messages.entities.service.success.deleted,
