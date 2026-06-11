@@ -69,10 +69,16 @@ const config: Config = {
                 },
             },
             borderRadius: {
-                xl: "var(--radius)",
-                lg: "calc(var(--radius) - 0.25rem)",
-                md: "calc(var(--radius) - 0.375rem)",
-                sm: "calc(var(--radius) - 0.5rem)",
+                sm: "calc(var(--radius) - 2px)",
+                md: "calc(var(--radius) - 1px)",
+                lg: "var(--radius)",
+                xl: "calc(var(--radius) + 2px)",
+            },
+            boxShadow: {
+                sm: "0 1px 2px 0 rgb(12 14 18 / 0.04)",
+                DEFAULT: "0 1px 2px 0 rgb(12 14 18 / 0.05), 0 1px 1px -1px rgb(12 14 18 / 0.04)",
+                md: "0 2px 4px -1px rgb(12 14 18 / 0.06), 0 1px 2px -1px rgb(12 14 18 / 0.05)",
+                lg: "0 8px 24px -6px rgb(12 14 18 / 0.12), 0 2px 6px -2px rgb(12 14 18 / 0.07)",
             },
             keyframes: {
                 "accordion-down": {

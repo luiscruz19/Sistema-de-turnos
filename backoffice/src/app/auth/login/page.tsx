@@ -50,18 +50,18 @@ export default function LoginPage() {
                     className="h-14 mb-10 object-contain"
                 />
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-white mb-3">Gestión de Turnos</h1>
+                    <h1 className="mb-3 text-2xl font-semibold tracking-tight text-white">Gestión de Turnos</h1>
                     <p className="text-slate-400 text-sm leading-relaxed">
                         Agendás, recordatorios y pagos<br />con inteligencia artificial integrada.
                     </p>
                 </div>
                 <div className="mt-auto pt-16 text-center">
-                    <p className="text-xs text-slate-600">© SDA.dev · Todos los derechos reservados</p>
+                    <p className="text-xs text-slate-500">© SDA.dev · Todos los derechos reservados</p>
                 </div>
             </div>
 
             {/* Panel derecho (formulario) */}
-            <div className="flex-1 flex flex-col bg-white">
+            <div className="flex-1 flex flex-col bg-background">
                 <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
                     {/* Logo mobile */}
                     <div className="lg:hidden mb-8 text-center">
@@ -70,32 +70,32 @@ export default function LoginPage() {
                             alt="SDA.dev"
                             className="h-10 mx-auto object-contain mb-3"
                         />
-                        <p className="text-sm font-medium text-slate-600">Gestión de Turnos</p>
+                        <p className="text-sm font-medium text-muted-foreground">Gestión de Turnos</p>
                     </div>
 
                     <div className="w-full max-w-sm">
                         <div className="mb-8">
-                            <h2 className="text-2xl font-bold text-slate-900">Iniciar sesión</h2>
-                            <p className="text-slate-500 text-sm mt-1">Accedé a tu panel de gestión</p>
+                            <h2 className="text-2xl font-semibold tracking-tight text-foreground">Iniciar sesión</h2>
+                            <p className="mt-1 text-sm text-muted-foreground">Accedé a tu panel de gestión</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {error && (
-                                <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                                <div className="flex items-center gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive">
                                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
                                     <span className="text-sm">{error}</span>
                                 </div>
                             )}
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                                <label className="mb-1.5 block text-sm font-medium text-foreground">Email</label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 text-sm bg-slate-50 transition-all"
+                                        className="w-full pl-10 pr-4 py-2.5 border border-input rounded-lg focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 text-sm bg-background transition-all"
                                         placeholder="tu@email.com"
                                         required
                                     />
@@ -103,21 +103,21 @@ export default function LoginPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Contraseña</label>
+                                <label className="mb-1.5 block text-sm font-medium text-foreground">Contraseña</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        className="w-full pl-10 pr-12 py-2.5 border border-slate-200 rounded-lg focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 text-sm bg-slate-50 transition-all"
+                                        className="w-full pl-10 pr-12 py-2.5 border border-input rounded-lg focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 text-sm bg-background transition-all"
                                         placeholder="••••••••"
                                         required
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
@@ -127,7 +127,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
+                                className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg shadow-sm hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
                             >
                                 {isSubmitting ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -141,8 +141,8 @@ export default function LoginPage() {
                 </div>
 
                 <div className="px-8 pb-6 text-center lg:hidden">
-                    <p className="text-xs text-slate-400">
-                        Desarrollado por <span className="font-medium text-slate-600">SDA.dev</span>
+                    <p className="text-xs text-muted-foreground">
+                        Desarrollado por <span className="font-medium text-foreground">SDA.dev</span>
                     </p>
                 </div>
             </div>

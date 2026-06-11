@@ -142,7 +142,7 @@ export default function PublicBookingPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div className="min-h-screen flex items-center justify-center bg-muted/30">
                 <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
             </div>
         );
@@ -150,7 +150,7 @@ export default function PublicBookingPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div className="min-h-screen flex items-center justify-center bg-muted/30">
                 <div className="bg-white rounded-xl shadow p-8 text-center max-w-md">
                     <p className="text-red-500 font-medium">{error}</p>
                     <p className="text-sm text-gray-400 mt-2">Verificá el enlace de reserva</p>
@@ -161,7 +161,7 @@ export default function PublicBookingPage() {
 
     if (step === 'confirm' && booked) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+            <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
                 <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md w-full">
                     <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-gray-800 mb-2">¡Reserva confirmada!</h2>
@@ -180,7 +180,7 @@ export default function PublicBookingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-start justify-center pt-8">
+        <div className="min-h-screen bg-muted/30 p-4 flex items-start justify-center pt-8">
             <div className="w-full max-w-lg">
                 {/* Header */}
                 <div className="text-center mb-6">

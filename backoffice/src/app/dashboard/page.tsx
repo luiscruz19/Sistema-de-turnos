@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiHeaders } from '@/utils/api-headers';
 import config from '@/config/config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatCard } from '@/components/ui/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -66,13 +67,10 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     {Array.from({ length: 5 }).map((_, i) => (
-                        <Card key={i}>
-                            <CardContent className="p-5 space-y-3">
-                                <Skeleton className="h-10 w-10 rounded-lg" />
-                                <Skeleton className="h-8 w-16" />
-                                <Skeleton className="h-4 w-20" />
-                            </CardContent>
-                        </Card>
+                        <div key={i} className="rounded-xl border bg-card px-[18px] pb-4 pt-[18px] shadow-sm">
+                            <Skeleton className="h-3 w-20" />
+                            <Skeleton className="mt-3 h-7 w-16" />
+                        </div>
                     ))}
                 </div>
                 <Card>
@@ -100,12 +98,12 @@ export default function DashboardPage() {
         .sort((a, b) => a.start_time.localeCompare(b.start_time))
         .slice(0, 8);
 
-    const kpis = [
-        { label: 'Turnos hoy', value: totalToday, icon: CalendarCheck },
-        { label: 'Confirmados', value: confirmed, icon: CheckCircle },
-        { label: 'Pendientes', value: pending, icon: Clock },
-        { label: 'Cancelaciones', value: cancelled, icon: XCircle },
-        { label: 'Ingresos', value: `$${revenue.toLocaleString('es-AR')}`, icon: DollarSign },
+    const kpis: { label: string; value: ReactNode; icon: ReactNode; delta?: string; deltaDirection?: 'up' | 'down' | 'muted' }[] = [
+        { label: 'Turnos hoy', value: totalToday, icon: <CalendarCheck />, delta: 'agendados hoy' },
+        { label: 'Confirmados', value: confirmed, icon: <CheckCircle />, delta: 'del dia', deltaDirection: confirmed > 0 ? 'up' : 'muted' },
+        { label: 'Pendientes', value: pending, icon: <Clock />, delta: 'por confirmar' },
+        { label: 'Cancelaciones', value: cancelled, icon: <XCircle />, delta: 'del dia', deltaDirection: cancelled > 0 ? 'down' : 'muted' },
+        { label: 'Ingresos', value: `$${revenue.toLocaleString('es-AR')}`, icon: <DollarSign />, delta: 'estimado del dia' },
     ];
 
     return (
@@ -133,20 +131,16 @@ export default function DashboardPage() {
 
             {/* KPIs */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {kpis.map((kpi) => {
-                    const Icon = kpi.icon;
-                    return (
-                        <Card key={kpi.label}>
-                            <CardContent className="p-5">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                                    <Icon className="h-5 w-5 text-primary" />
-                                </div>
-                                <p className="mt-3 text-3xl font-semibold tracking-tight text-foreground">{kpi.value}</p>
-                                <p className="mt-1 text-sm text-muted-foreground">{kpi.label}</p>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                {kpis.map((kpi) => (
+                    <StatCard
+                        key={kpi.label}
+                        label={kpi.label}
+                        value={kpi.value}
+                        icon={kpi.icon}
+                        delta={kpi.delta}
+                        deltaDirection={kpi.deltaDirection}
+                    />
+                ))}
             </div>
 
             {/* Proximos turnos */}
@@ -184,7 +178,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div
                                             className="w-1 h-8 rounded-full"
-                                            style={{ backgroundColor: apt.professional?.color || '#3b82f6' }}
+                                            style={{ backgroundColor: apt.professional?.color || 'hsl(var(--primary))' }}
                                         />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-foreground truncate">

@@ -313,10 +313,10 @@ export default function HorariosPage() {
                     <div className="space-y-4">
                         <div>
                             <Label>Profesional</Label>
-                            <Select value={scheduleForm.professional_id} onValueChange={v => setScheduleForm(f => ({ ...f, professional_id: v }))}>
+                            <Select value={scheduleForm.professional_id || '__general__'} onValueChange={v => setScheduleForm(f => ({ ...f, professional_id: v === '__general__' ? '' : v }))}>
                                 <SelectTrigger><SelectValue placeholder="General (todos)" /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">General</SelectItem>
+                                    <SelectItem value="__general__">General</SelectItem>
                                     {professionals.filter(p => p.active).map(p => (
                                         <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
                                     ))}
@@ -364,10 +364,10 @@ export default function HorariosPage() {
                     <div className="space-y-4">
                         <div>
                             <Label>Profesional</Label>
-                            <Select value={exceptionForm.professional_id} onValueChange={v => setExceptionForm(f => ({ ...f, professional_id: v }))}>
+                            <Select value={exceptionForm.professional_id || '__general__'} onValueChange={v => setExceptionForm(f => ({ ...f, professional_id: v === '__general__' ? '' : v }))}>
                                 <SelectTrigger><SelectValue placeholder="General (todos)" /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">General</SelectItem>
+                                    <SelectItem value="__general__">General</SelectItem>
                                     {professionals.filter(p => p.active).map(p => (
                                         <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
                                     ))}

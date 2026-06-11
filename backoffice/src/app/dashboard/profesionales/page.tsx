@@ -28,7 +28,7 @@ export default function ProfesionalesPage() {
     const [editing, setEditing] = useState<Professional | null>(null);
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState({
-        name: '', email: '', phone: '', specialty: '', color: '#3b82f6', active: true,
+        name: '', email: '', phone: '', specialty: '', color: '#2d4773', active: true,
         service_ids: [] as number[],
     });
 
@@ -55,7 +55,7 @@ export default function ProfesionalesPage() {
 
     const openNew = () => {
         setEditing(null);
-        setForm({ name: '', email: '', phone: '', specialty: '', color: '#3b82f6', active: true, service_ids: [] });
+        setForm({ name: '', email: '', phone: '', specialty: '', color: '#2d4773', active: true, service_ids: [] });
         setShowModal(true);
     };
 
@@ -66,7 +66,7 @@ export default function ProfesionalesPage() {
             email: p.email || '',
             phone: p.phone || '',
             specialty: p.specialty || '',
-            color: p.color || '#3b82f6',
+            color: p.color || '#2d4773',
             active: p.active,
             service_ids: p.professionalServices?.map(ps => ps.service_id) || [],
         });
