@@ -56,9 +56,15 @@ export async function DELETE(
         const h = getRequestHeaders(request);
         if (!h.token) return NextResponse.json(not_auth, { status: 401 });
 
+        // Motivo opcional de cancelación enviado por el panel (body vacío => {}).
+        const body = await request.json().catch(() => ({}));
+
         const response = await serviceRequest({
             method: 'DELETE',
             path: `/appointments/admins/${id}`,
+            // El panel administrativo siempre puede cancelar: la política de horas
+            // mínimas aplica al cliente en el widget público, no al admin.
+            data: { force: true, cancel_reason: body?.cancel_reason ?? null },
             token: h.token,
         });
         return NextResponse.json(response, { status: response.status > 0 ? 200 : 400 });
