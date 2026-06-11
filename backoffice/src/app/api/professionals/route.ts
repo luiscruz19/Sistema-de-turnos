@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
         const response = await serviceRequest({
             method: 'GET',
             path: '/professionals/admins',
+            // Reenviar filtros/búsqueda/paginación al microservicio (server-side).
+            params: Object.fromEntries(request.nextUrl.searchParams),
             token: h.token,
         });
         return NextResponse.json(response, { status: response.status > 0 ? 200 : 400 });
